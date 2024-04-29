@@ -6,8 +6,10 @@ import { useForm } from "react-hook-form";
 import TextField from "../components/TextField";
 import Password from "../components/Password";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const schema = yup.object({
     email: yup.string().required("Email address is required"),
     password: yup.string().required("Password is required"),
@@ -36,8 +38,8 @@ const Login = () => {
         toast.error("Failed to log in");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
+      console.error(error);
+      toast.error(error.response.data.message || "Something went wrong");
     }
   };
   return (
@@ -59,6 +61,13 @@ const Login = () => {
           register={register}
         />
         <Button type="submit">Login</Button>
+        <Button
+          onClick={() => {
+            navigate("/signup");
+          }}
+        >
+          Go to signup
+        </Button>
       </form>
     </div>
   );

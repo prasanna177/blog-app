@@ -4,9 +4,10 @@ import { authRoutes } from "./PublicRoute";
 import { bloggerRoutes } from "./BloggerRoute";
 import RedirectIfLoggedIn from "./RouteWrappers/RedirectIfLoggedIn";
 import RequireAuth from "./RouteWrappers/RequireAuth";
+import { hybridRoutes } from "./HybridRoute";
 
 const AppRoute = () => {
-  const protectedRoutes = [...adminRoutes, ...bloggerRoutes];
+  const protectedRoutes = [...adminRoutes, ...bloggerRoutes, ...hybridRoutes];
 
   const publicRoutes = [...authRoutes];
   return (
@@ -25,7 +26,11 @@ const AppRoute = () => {
             <Route
               key={route.path}
               path={route.path}
-              element={<RequireAuth>{route.element}</RequireAuth>}
+              element={
+                <RequireAuth userRoles={route?.availability}>
+                  {route.element}
+                </RequireAuth>
+              }
             />
           );
         })}

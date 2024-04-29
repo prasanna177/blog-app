@@ -1,8 +1,11 @@
 import { Button, Input, Select, Text, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     body: "",
@@ -230,6 +233,15 @@ const Home = () => {
   };
   return (
     <div>
+      <Button
+        onClick={() => {
+          localStorage.clear();
+          toast.success("Logged out successfully");
+          navigate("/login");
+        }}
+      >
+        Logout
+      </Button>
       <Text variant={"heading1"}>hello</Text>
       <div>
         <h2>CREATE POST FORM</h2>

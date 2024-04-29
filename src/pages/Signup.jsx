@@ -5,8 +5,11 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import TextField from "../components/TextField";
 import Password from "../components/Password";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const schema = yup.object({
     name: yup.string().required("Name address is required"),
     email: yup.string().required("Email address is required"),
@@ -31,13 +34,15 @@ const Signup = () => {
       );
       console.log(response, "res");
 
-      if (!response.ok) {
-        throw new Error("Failed to signup");
+      if (response.status === 200) {
+        toast.success("User signed up successfully");
+        navigate("/login");
+      } else {
+        toast.error("Failed to sign up");
       }
-
-      console.log("User signed up successfully");
     } catch (error) {
-      console.error("Error signing up:", error.message);
+      console.error(error);
+      toast.error(error.response.data.message || 'Something went wrong');
     }
   };
 
@@ -65,6 +70,13 @@ const Signup = () => {
           register={register}
         />
         <Button type="submit">Signup</Button>
+        <Button
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
+          Go to login
+        </Button>
       </form>
     </>
   );

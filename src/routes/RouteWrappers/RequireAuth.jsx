@@ -1,13 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { setUser } from "../../redux/features/userSlice";
 
 const RequireAuth = ({ children, userRoles }) => {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
 
   const clearLocalStorageOnError = (error) => {
     if (error.response && error.response.status === 403) {
@@ -30,35 +26,6 @@ const RequireAuth = ({ children, userRoles }) => {
       axios.interceptors.response.eject(interceptor);
     };
   }, []);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getUser = async () => {
-    try {
-      const response = await axios.post(
-        `https://localhost:7141/api/user/getCurrentUser`,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        }
-      );
-      if (response.data.success) {
-        dispatch(setUser(response.data.data));
-      } else {
-        <Navigate to="/login" />;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (!user) {
-      getUser();
-    }
-    //eslint-disable-next-line
-  }, [user, getUser]);
 
   let currentUserRole;
   if (localStorage.getItem("token")) {
