@@ -5,7 +5,7 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import TextField from "../components/TextField";
 import Password from "../components/Password";
-import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const schema = yup.object({
@@ -22,32 +22,22 @@ const Login = () => {
   });
 
   const handleLoginSubmit = async (data) => {
-    console.log(data, "data");
     try {
       const response = await axios.post(
         "https://localhost:7141/api/Auth/login",
         data
       );
-      const decodedToken = jwtDecode(response.data.token);
-      const userId =
-        decodedToken[
-          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-        ];
-
-      const role =
-        decodedToken[
-          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-        ];
-
-      console.log(userId, role);
-
-      if (!response.ok) {
-        throw new Error("Failed to login");
+      console.log(response, "res");
+      if (response.status === 200) {
+        window.location.reload();
+        toast.success("Logged in successfully");
+        localStorage.setItem("token", response.data.token);
+      } else {
+        toast.error("Failed to log in");
       }
-
-      console.log("User logged in successfully");
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.log(error);
+      toast.error("Something went wrong");
     }
   };
   return (
