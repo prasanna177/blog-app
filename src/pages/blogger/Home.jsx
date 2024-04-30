@@ -1,6 +1,5 @@
 import { Button, Input, Select, Text, Textarea } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -18,11 +17,11 @@ const Home = () => {
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
 
-  useEffect(() => {
-    fetchPosts();
-    fetchComments();
-    fetchReactions();
-  }, []);
+  // useEffect(() => {
+  //   fetchPosts();
+  //   fetchComments();
+  //   fetchReactions();
+  // }, []);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -67,72 +66,6 @@ const Home = () => {
     }
   };
 
-  const [signupData, setSignupData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "user",
-  });
-
-  const handleSignupChange = (e) => {
-    setSignupData({ ...signupData, [e.target.name]: e.target.value });
-  };
-
-  const handleSignupSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_PORT}/api/Auth/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(signupData),
-        }
-      );
-      console.log(response, "res");
-
-      if (!response.ok) {
-        throw new Error("Failed to signup");
-      }
-
-      console.log("User signed up successfully");
-    } catch (error) {
-      console.error("Error signing up:", error.message);
-    }
-  };
-  const [loginData, setLoginData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleLoginChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  };
-
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("https://localhost:7141/api/Auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
-      console.log(response, "res");
-      if (!response.ok) {
-        throw new Error("Failed to login");
-      }
-
-      console.log("User logged in successfully");
-    } catch (error) {
-      console.error("Error logging in:", error.message);
-    }
-  };
   const [commentData, setCommentData] = useState({
     content: "",
     user: "",
@@ -291,61 +224,7 @@ const Home = () => {
             ))}
           </ul>
         )}
-        <h2>SIGNUP FORM</h2>
 
-        {/* Signup Form */}
-        <form onSubmit={handleSignupSubmit}>
-          <Input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={signupData.name}
-            onChange={handleSignupChange}
-          />
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={signupData.email}
-            onChange={handleSignupChange}
-          />
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={signupData.password}
-            onChange={handleSignupChange}
-          />
-
-          {/* <input
-          type="text"
-          name="role"
-          placeholder="Role"
-          value={signupData.role}
-          onChange={handleSignupChange}
-        /> */}
-          <Button type="submit">Signup</Button>
-        </form>
-        <h2>LOGIN FORM</h2>
-
-        {/* Login Form */}
-        <form onSubmit={handleLoginSubmit}>
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={loginData.email}
-            onChange={handleLoginChange}
-          />
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={loginData.password}
-            onChange={handleLoginChange}
-          />
-          <Button type="submit">Login</Button>
-        </form>
         <h2>COMMENT POST FORM</h2>
 
         {/* Comment Form */}

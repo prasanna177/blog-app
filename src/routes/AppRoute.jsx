@@ -5,6 +5,7 @@ import { bloggerRoutes } from "./BloggerRoute";
 import RedirectIfLoggedIn from "./RouteWrappers/RedirectIfLoggedIn";
 import RequireAuth from "./RouteWrappers/RequireAuth";
 import { hybridRoutes } from "./HybridRoute";
+import CreateBlog from "../pages/blogger/CreateBlog";
 
 const AppRoute = () => {
   const protectedRoutes = [...adminRoutes, ...bloggerRoutes, ...hybridRoutes];
@@ -13,6 +14,12 @@ const AppRoute = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* surfer le herna milne route */}
+        <Route
+          key={"/create-blog"}
+          path={"/create-blog"}
+          element={<CreateBlog />}
+        />
         {publicRoutes.map((route) => (
           <Route
             key={route.path}

@@ -9,5 +9,5 @@ export const authRoutes = [
   {
     path: "/signup",
     element: <Signup />,
-  }
+  },
 ];

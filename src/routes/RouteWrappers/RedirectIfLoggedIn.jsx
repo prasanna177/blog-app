@@ -5,6 +5,7 @@ const RedirectIfLoggedIn = ({ children }) => {
   let currentUserRole;
   if (localStorage.getItem("token")) {
     const decodedToken = jwtDecode(localStorage.getItem("token"));
+    console.log(decodedToken)
     currentUserRole =
       decodedToken[
         "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
