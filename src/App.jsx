@@ -1,10 +1,12 @@
-function App() {
+import Dashboard from "./components/Admin";
 
+function App() {
   return (
     <>
-     asd
+      {/* <Component /> */}
+      <Dashboard />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
