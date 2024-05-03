@@ -55,7 +55,7 @@ const BlogDetails = () => {
       );
       console.log(response, "resComPost");
       if (response.status === 201) {
-        fetchComments()
+        fetchComments();
         toast.success("Comment added");
       } else {
         toast.error("Failed to add comment.");
@@ -84,13 +84,13 @@ const BlogDetails = () => {
       const response = await axios.get(
         `https://localhost:7141/api/Comments/ByPostId/${params.id}`
       );
-      setComments(response.data)
+      setComments(response.data);
     } catch (error) {
       console.log("Error in fetching comments", error);
     }
   };
 
-  console.log(comments)
+  console.log(comments);
   return (
     <Box>
       <Text>{posts.title}</Text>
@@ -109,9 +109,16 @@ const BlogDetails = () => {
       </form>
 
       <Text>Comments</Text>
-      <VStack alignItems={'stretch'}>
+      <VStack alignItems={"stretch"}>
         {comments.map((comment) => (
-          <CommentCard key={comment.id} content={comment.content} user={user} createdAt={comment.createdAt} />
+          <CommentCard
+            key={comment.id}
+            id={comment.id}
+            content={comment.content}
+            userId={comment.user}
+            createdAt={comment.createdAt}
+            fetchComments={fetchComments}
+          />
         ))}
       </VStack>
     </Box>

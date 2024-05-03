@@ -1,5 +1,5 @@
 import { Button, Input, Select, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -11,26 +11,26 @@ const Home = () => {
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
 
-  // useEffect(() => {
-  //   fetchPosts();
-  //   fetchComments();
-  //   fetchReactions();
-  // }, []);
+  useEffect(() => {
+    fetchPosts();
+    fetchComments();
+    fetchReactions();
+  }, []);
 
-  // const fetchPosts = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch("https://localhost:7141/api/Posts");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch posts");
-  //     }
-  //     const data = await response.json();
-  //     setPosts(data);
-  //   } catch (error) {
-  //     console.error("Error fetching posts:", error.message);
-  //   }
-  //   setLoading(false);
-  // };
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://localhost:7141/api/Posts");
+      if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+      }
+      const data = await response.json();
+      setPosts(data);
+    } catch (error) {
+      console.error("Error fetching posts:", error.message);
+    }
+    setLoading(false);
+  };
 
   const [commentData, setCommentData] = useState({
     content: "",
@@ -64,20 +64,20 @@ const Home = () => {
       console.error("Error posting comment:", error.message);
     }
   };
-  // const fetchComments = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch("https://localhost:7141/api/Comments");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch comments");
-  //     }
-  //     const data = await response.json();
-  //     setComments(data);
-  //   } catch (error) {
-  //     console.error("Error fetching comments:", error.message);
-  //   }
-  //   setLoading(false);
-  // };
+  const fetchComments = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://localhost:7141/api/Comments");
+      if (!response.ok) {
+        throw new Error("Failed to fetch comments");
+      }
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error.message);
+    }
+    setLoading(false);
+  };
   const [reactionData, setReactionData] = useState({
     isPositive: true,
     user: "",
@@ -116,20 +116,20 @@ const Home = () => {
       console.error("Error posting reaction:", error.message);
     }
   };
-  // const fetchReactions = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch("https://localhost:7141/api/PostReactions");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to fetch reactions");
-  //     }
-  //     const data = await response.json();
-  //     setReactions(data);
-  //   } catch (error) {
-  //     console.error("Error fetching reactions:", error.message);
-  //   }
-  //   setLoading(false);
-  // };
+  const fetchReactions = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("https://localhost:7141/api/PostReactions");
+      if (!response.ok) {
+        throw new Error("Failed to fetch reactions");
+      }
+      const data = await response.json();
+      setReactions(data);
+    } catch (error) {
+      console.error("Error fetching reactions:", error.message);
+    }
+    setLoading(false);
+  };
   return (
     <div>
       <Button
