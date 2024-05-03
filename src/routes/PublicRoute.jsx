@@ -1,7 +1,9 @@
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import BlogDetails from "../pages/blogger/BlogDetails";
+import CreateBlog from "../pages/blogger/CreateBlog";
 
-export const authRoutes = [
+export const authenticationRoutes = [
   {
     path: "/login",
     element: <Login />,
@@ -9,5 +11,17 @@ export const authRoutes = [
   {
     path: "/signup",
     element: <Signup />,
+  },
+];
+
+export const surferRoutes = [
+  {
+    path: "/create-blog",
+    element: <CreateBlog />,
+  },
+  {
+    path: "/blog/:id",
+    element: <BlogDetails />,
+    availability: ["user"],
   },
 ];

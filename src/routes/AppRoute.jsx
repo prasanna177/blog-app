@@ -1,26 +1,30 @@
 import { adminRoutes } from "./AdminRoute";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { authRoutes } from "./PublicRoute";
+import { authenticationRoutes, surferRoutes } from "./PublicRoute";
 import { bloggerRoutes } from "./BloggerRoute";
 import RedirectIfLoggedIn from "./RouteWrappers/RedirectIfLoggedIn";
 import RequireAuth from "./RouteWrappers/RequireAuth";
 import { hybridRoutes } from "./HybridRoute";
-import CreateBlog from "../pages/blogger/CreateBlog";
+import PublicWrapper from "./RouteWrappers/PublicWrapper";
 
 const AppRoute = () => {
   const protectedRoutes = [...adminRoutes, ...bloggerRoutes, ...hybridRoutes];
 
-  const publicRoutes = [...authRoutes];
+  const authRoutes = [...authenticationRoutes];
+  const publicRoutes = [...surferRoutes];
   return (
     <BrowserRouter>
       <Routes>
         {/* surfer le herna milne route */}
-        <Route
-          key={"/create-blog"}
-          path={"/create-blog"}
-          element={<CreateBlog />}
-        />
         {publicRoutes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<PublicWrapper>{route.element}</PublicWrapper>}
+          />
+        ))}
+
+        {authRoutes.map((route) => (
           <Route
             key={route.path}
             path={route.path}

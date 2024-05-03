@@ -26,7 +26,7 @@ const Login = () => {
   const handleLoginSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "https://localhost:7141/api/Auth/login",
+        `https://localhost:7141/api/Auth/login`,
         data
       );
       console.log(response, "res");

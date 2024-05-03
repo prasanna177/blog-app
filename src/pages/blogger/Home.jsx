@@ -1,16 +1,10 @@
-import { Button, Input, Select, Text, Textarea } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { Button, Input, Select, Text } from "@chakra-ui/react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: "",
-    body: "",
-    images: "",
-    author: "",
-  });
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,48 +17,20 @@ const Home = () => {
   //   fetchReactions();
   // }, []);
 
-  const fetchPosts = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("https://localhost:7141/api/Posts");
-      if (!response.ok) {
-        throw new Error("Failed to fetch posts");
-      }
-      const data = await response.json();
-      setPosts(data);
-    } catch (error) {
-      console.error("Error fetching posts:", error.message);
-    }
-    setLoading(false);
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("https://localhost:7141/api/Posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create post");
-      }
-
-      console.log("Post created successfully");
-
-      fetchPosts();
-    } catch (error) {
-      console.error("Error creating post:", error.message);
-    }
-  };
+  // const fetchPosts = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch("https://localhost:7141/api/Posts");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch posts");
+  //     }
+  //     const data = await response.json();
+  //     setPosts(data);
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error.message);
+  //   }
+  //   setLoading(false);
+  // };
 
   const [commentData, setCommentData] = useState({
     content: "",
@@ -98,20 +64,20 @@ const Home = () => {
       console.error("Error posting comment:", error.message);
     }
   };
-  const fetchComments = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("https://localhost:7141/api/Comments");
-      if (!response.ok) {
-        throw new Error("Failed to fetch comments");
-      }
-      const data = await response.json();
-      setComments(data);
-    } catch (error) {
-      console.error("Error fetching comments:", error.message);
-    }
-    setLoading(false);
-  };
+  // const fetchComments = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch("https://localhost:7141/api/Comments");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch comments");
+  //     }
+  //     const data = await response.json();
+  //     setComments(data);
+  //   } catch (error) {
+  //     console.error("Error fetching comments:", error.message);
+  //   }
+  //   setLoading(false);
+  // };
   const [reactionData, setReactionData] = useState({
     isPositive: true,
     user: "",
@@ -150,20 +116,20 @@ const Home = () => {
       console.error("Error posting reaction:", error.message);
     }
   };
-  const fetchReactions = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("https://localhost:7141/api/PostReactions");
-      if (!response.ok) {
-        throw new Error("Failed to fetch reactions");
-      }
-      const data = await response.json();
-      setReactions(data);
-    } catch (error) {
-      console.error("Error fetching reactions:", error.message);
-    }
-    setLoading(false);
-  };
+  // const fetchReactions = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch("https://localhost:7141/api/PostReactions");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch reactions");
+  //     }
+  //     const data = await response.json();
+  //     setReactions(data);
+  //   } catch (error) {
+  //     console.error("Error fetching reactions:", error.message);
+  //   }
+  //   setLoading(false);
+  // };
   return (
     <div>
       <Button
@@ -177,39 +143,7 @@ const Home = () => {
       </Button>
       <Text variant={"heading1"}>hello</Text>
       <div>
-        <h2>CREATE POST FORM</h2>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
-            onChange={handleChange}
-          />
-          <Textarea
-            name="body"
-            placeholder="Body"
-            value={formData.body}
-            onChange={handleChange}
-          ></Textarea>
-          <Input
-            type="text"
-            name="images"
-            placeholder="Images URL"
-            value={formData.images}
-            onChange={handleChange}
-          />
-          <Input
-            type="text"
-            name="author"
-            placeholder="Author"
-            value={formData.author}
-            onChange={handleChange}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
         <h2>DISPLAY POST</h2>
-
         {loading ? (
           <p>Loading posts...</p>
         ) : (
