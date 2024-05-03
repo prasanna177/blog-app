@@ -1,4 +1,9 @@
-import { Box, Button, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,6 +20,8 @@ import CommentCard from "../../components/Cards/CommentCard";
 const BlogDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
+
+  
 
   const { user } = useSelector((state) => state.user);
 
@@ -93,6 +100,7 @@ const BlogDetails = () => {
   console.log(comments);
   return (
     <Box>
+      
       <Text>{posts.title}</Text>
       <Text>{getDateAndTime(posts.createdAt)}</Text>
       <ImageComponent width={"400px"} src={posts.images} />

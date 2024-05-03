@@ -32,6 +32,14 @@ const primary = {
   200: "#837AFE",
 };
 
+const warning = {
+  100: "#FFDD96",
+  200: "#FFB92B",
+  300: "#FFAB00",
+  400: "#B37800",
+  500: "#9C6800"
+};
+
 const colors = {
   black,
   white,
@@ -39,6 +47,7 @@ const colors = {
   error,
   primary,
   opaque,
+  warning
 };
 
 export default colors;

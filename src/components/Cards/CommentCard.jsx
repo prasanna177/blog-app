@@ -1,4 +1,19 @@
-import { Button, Card, CardBody, Input, Text, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { getDateAndTime } from "../../utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -11,6 +26,8 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
   const [commentValue, setCommentValue] = useState(content);
   const inputRef = useRef(null);
   const params = useParams();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
@@ -37,7 +54,7 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
           createdAt: new Date(),
           postId: params.id,
         };
-        console.log(submissionData)
+        console.log(submissionData);
         const response = await axios.put(
           `https://localhost:7141/api/Comments/${id}`,
           submissionData
@@ -45,14 +62,41 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
         if (response.status === 200) {
           fetchComments();
           toast.success("Comment edited");
-          setIsEditMode(false)
+          setIsEditMode(false);
         } else {
-          toast.error("Failed to add comment.");
+          toast.error("Failed to edit comment.");
         }
       } catch (error) {
         console.log(error);
         toast.error(error.response.data.message || "Something went wrong");
       }
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const submissionData = {
+        content: commentValue,
+        user,
+        createdAt: new Date(),
+        postId: params.id,
+      };
+      console.log(submissionData);
+      const response = await axios.delete(
+        `https://localhost:7141/api/Comments/${id}`,
+        submissionData
+      );
+      console.log(response);
+      if (response.status === 204) {
+        toast.success("Comment deleted");
+        setIsEditMode(false);
+        fetchComments();
+      } else {
+        toast.error("Failed to delete comment.");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Something went wrong");
     }
   };
   // const fetchCommentor = async () => {
@@ -64,7 +108,30 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
   // })
   return (
     <Card>
-      <CardBody bg={"gray.00"}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Are you sure?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Text variant={"subtitle1"}>
+              This action will delete this comment.
+            </Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              onClick={handleDelete}
+              variant="ghost"
+              bg={"error.100"}
+              color={"white"}
+            >
+              Delete
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      <CardBody bg={"gray.100"}>
         <Text>User:{userId}</Text>
         <Text>Date: {getDateAndTime(createdAt)}</Text>
         {isEditMode ? (
@@ -83,7 +150,18 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
           <Text>Comment: {content}</Text>
         )}
         {user === userId && !isEditMode && (
-          <Button onClick={handleEditClick}>Edit</Button>
+          <>
+            <Button
+              bg={"warning.200"}
+              color={"white"}
+              onClick={handleEditClick}
+            >
+              Edit
+            </Button>
+            <Button bg={"error.100"} color={"white"} onClick={() => onOpen()}>
+              Delete
+            </Button>
+          </>
         )}
       </CardBody>
     </Card>
