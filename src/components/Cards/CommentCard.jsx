@@ -55,16 +55,20 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
           postId: params.id,
         };
         console.log(submissionData);
-        const response = await axios.put(
-          `https://localhost:7141/api/Comments/${id}`,
-          submissionData
-        );
-        if (response.status === 200) {
-          fetchComments();
-          toast.success("Comment edited");
-          setIsEditMode(false);
+        if (content !== commentValue) {
+          const response = await axios.put(
+            `https://localhost:7141/api/Comments/${id}`,
+            submissionData
+          );
+          if (response.status === 200) {
+            fetchComments();
+            toast.success("Comment edited");
+            setIsEditMode(false);
+          } else {
+            toast.error("Failed to edit comment.");
+          }
         } else {
-          toast.error("Failed to edit comment.");
+          setIsEditMode(false);
         }
       } catch (error) {
         console.log(error);

@@ -1,9 +1,4 @@
-import {
-  Box,
-  Button,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,8 +15,6 @@ import CommentCard from "../../components/Cards/CommentCard";
 const BlogDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
-
-  
 
   const { user } = useSelector((state) => state.user);
 
@@ -100,7 +93,6 @@ const BlogDetails = () => {
   console.log(comments);
   return (
     <Box>
-      
       <Text>{posts.title}</Text>
       <Text>{getDateAndTime(posts.createdAt)}</Text>
       <ImageComponent width={"400px"} src={posts.images} />
@@ -117,18 +109,22 @@ const BlogDetails = () => {
       </form>
 
       <Text>Comments</Text>
-      <VStack alignItems={"stretch"}>
-        {comments.map((comment) => (
-          <CommentCard
-            key={comment.id}
-            id={comment.id}
-            content={comment.content}
-            userId={comment.user}
-            createdAt={comment.createdAt}
-            fetchComments={fetchComments}
-          />
-        ))}
-      </VStack>
+      {comments.length > 0 ? (
+        <VStack alignItems={"stretch"}>
+          {comments.map((comment) => (
+            <CommentCard
+              key={comment.id}
+              id={comment.id}
+              content={comment.content}
+              userId={comment.user}
+              createdAt={comment.createdAt}
+              fetchComments={fetchComments}
+            />
+          ))}
+        </VStack>
+      ) : (
+        <Text>No comments</Text>
+      )}
     </Box>
   );
 };
