@@ -36,7 +36,11 @@ const CommentCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
 
-  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
+  } = useDisclosure();
   // const { isOpen: isReactionOpen, onOpen: onReactionOpen, onClose: onReactionClose } = useDisclosure();
 
   useEffect(() => {
@@ -153,7 +157,11 @@ const CommentCard = ({
             >
               Edit
             </Button>
-            <Button bg={"error.100"} color={"white"} onClick={() => onDeleteOpen()}>
+            <Button
+              bg={"error.100"}
+              color={"white"}
+              onClick={() => onDeleteOpen()}
+            >
               Delete
             </Button>
             <HStack>
@@ -161,7 +169,6 @@ const CommentCard = ({
                 <FaThumbsUp
                   color="blue"
                   onClick={() => {
-                    setIsLiked(false);
                     console.log("removed liked");
                   }}
                 />
@@ -169,8 +176,6 @@ const CommentCard = ({
                 <FaRegThumbsUp
                   color="blue"
                   onClick={() => {
-                    setIsLiked(true);
-                    setIsDisliked(false);
                     handleReaction(true, true, id);
                   }}
                 />
@@ -179,7 +184,6 @@ const CommentCard = ({
                 <FaThumbsDown
                   color="blue"
                   onClick={() => {
-                    setIsDisliked(false);
                     console.log("removed dislike");
                   }}
                 />
@@ -187,8 +191,6 @@ const CommentCard = ({
                 <FaRegThumbsDown
                   color="blue"
                   onClick={() => {
-                    setIsDisliked(true);
-                    setIsLiked(false);
                     handleReaction(true, false, id);
                   }}
                 />

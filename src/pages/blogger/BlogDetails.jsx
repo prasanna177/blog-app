@@ -270,7 +270,7 @@ const BlogDetails = () => {
             />
           </Box>
         )}
-        <Text onClick={() => onOpen()}>{totalReactions}</Text>
+        <Text _hover={{cursor: "pointer"}} onClick={() => onOpen()}>{totalReactions}</Text>
         {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
         </Tooltip> */}
       </HStack>

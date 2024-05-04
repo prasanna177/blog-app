@@ -14,6 +14,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
+import React from "react";
 
 const ReactionModal = ({
   isOpen,
@@ -37,13 +38,13 @@ const ReactionModal = ({
             <TabPanels>
               <TabPanel>
                 {likedReactions?.map((reaction) => (
-                  <>
-                    <HStack key={reaction.id}>
+                  <React.Fragment key={reaction.id}>
+                    <HStack>
                       <Text>{reaction.user}</Text>
                       <Text>Liked</Text>
                     </HStack>
                     <Divider />
-                  </>
+                  </React.Fragment>
                 ))}
               </TabPanel>
               <TabPanel>
