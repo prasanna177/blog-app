@@ -4,13 +4,6 @@ import {
   CardBody,
   HStack,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Text,
   VStack,
   useDisclosure,
@@ -25,6 +18,7 @@ import { FaRegThumbsUp } from "react-icons/fa";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
+import DeleteComment from "../Modals/DeleteComment";
 
 const CommentCard = ({
   id,
@@ -42,7 +36,8 @@ const CommentCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  // const { isOpen: isReactionOpen, onOpen: onReactionOpen, onClose: onReactionClose } = useDisclosure();
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
@@ -126,29 +121,11 @@ const CommentCard = ({
   // })
   return (
     <Card>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Are you sure?</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text variant={"subtitle1"}>
-              This action will delete this comment.
-            </Text>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              onClick={handleDelete}
-              variant="ghost"
-              bg={"error.100"}
-              color={"white"}
-            >
-              Delete
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <DeleteComment
+        onClose={onDeleteClose}
+        isOpen={isDeleteOpen}
+        handleDelete={handleDelete}
+      />
       <CardBody bg={"gray.100"}>
         <Text>User:{userId}</Text>
         <Text>Date: {getDateAndTime(createdAt)}</Text>
@@ -176,7 +153,7 @@ const CommentCard = ({
             >
               Edit
             </Button>
-            <Button bg={"error.100"} color={"white"} onClick={() => onOpen()}>
+            <Button bg={"error.100"} color={"white"} onClick={() => onDeleteOpen()}>
               Delete
             </Button>
             <HStack>

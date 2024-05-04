@@ -1,4 +1,11 @@
-import { Box, Button, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  HStack,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,6 +22,8 @@ import { FaRegThumbsUp } from "react-icons/fa";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
+import ReactionModal from "../../components/Modals/ReactionModal";
+import Tooltip from "../../components/Tooltip";
 
 const BlogDetails = () => {
   const params = useParams();
@@ -40,6 +49,8 @@ const BlogDetails = () => {
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [totalReactions, setTotalReactions] = useState(0);
+  const [likedReactions, setLikedReactions] = useState(null);
+  const [dislikedReactions, setDislikedReactions] = useState(null);
 
   useEffect(() => {
     calculateTotalReactions();
@@ -74,7 +85,6 @@ const BlogDetails = () => {
       );
 
       if (existingReaction) {
-        // If the user has already reacted, delete the existing reaction
         await handleDeleteReaction();
       }
       const response = await axios.post(
@@ -175,6 +185,16 @@ const BlogDetails = () => {
       const response = await axios.get(
         `https://localhost:7141/api/PostReactions/ByPostId/${params.id}`
       );
+      const likedReactions = response.data.filter(
+        (reaction) =>
+          reaction.isPositive === true && reaction.isCommentReaction === false
+      );
+      const dislikedReactions = response.data.filter(
+        (reaction) =>
+          reaction.isPositive === false && reaction.isCommentReaction === false
+      );
+      setLikedReactions(likedReactions);
+      setDislikedReactions(dislikedReactions);
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
@@ -197,10 +217,17 @@ const BlogDetails = () => {
     }
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   console.log(reactions, "reactions");
 
   return (
     <Box>
+      <ReactionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        likedReactions={likedReactions}
+        dislikedReactions={dislikedReactions}
+      />
       <HStack>
         {isLiked ? (
           <Box _hover={{ cursor: "pointer" }}>
@@ -243,7 +270,9 @@ const BlogDetails = () => {
             />
           </Box>
         )}
-        <Text>{totalReactions}</Text>
+        <Text onClick={() => onOpen()}>{totalReactions}</Text>
+        {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
+        </Tooltip> */}
       </HStack>
       <Text>{posts.title}</Text>
       <Text>{getDateAndTime(posts.createdAt)}</Text>
