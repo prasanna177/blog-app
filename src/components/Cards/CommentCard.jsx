@@ -2,6 +2,7 @@ import {
   Button,
   Card,
   CardBody,
+  HStack,
   Input,
   Modal,
   ModalBody,
@@ -20,12 +21,26 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { FaRegThumbsUp } from "react-icons/fa";
+import { FaThumbsUp } from "react-icons/fa";
+import { FaRegThumbsDown } from "react-icons/fa";
+import { FaThumbsDown } from "react-icons/fa";
 
-const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
+const CommentCard = ({
+  id,
+  content,
+  userId,
+  createdAt,
+  fetchComments,
+  handleReaction,
+}) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [commentValue, setCommentValue] = useState(content);
   const inputRef = useRef(null);
   const params = useParams();
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -54,7 +69,6 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
           createdAt: new Date(),
           postId: params.id,
         };
-        console.log(submissionData);
         if (content !== commentValue) {
           const response = await axios.put(
             `https://localhost:7141/api/Comments/${id}`,
@@ -165,6 +179,45 @@ const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
             <Button bg={"error.100"} color={"white"} onClick={() => onOpen()}>
               Delete
             </Button>
+            <HStack>
+              {isLiked ? (
+                <FaThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    setIsLiked(false);
+                    console.log("removed liked");
+                  }}
+                />
+              ) : (
+                <FaRegThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    setIsLiked(true);
+                    setIsDisliked(false);
+                    handleReaction(true, true, id);
+                  }}
+                />
+              )}
+              {isDisliked ? (
+                <FaThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    setIsDisliked(false);
+                    console.log("removed dislike");
+                  }}
+                />
+              ) : (
+                <FaRegThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    setIsDisliked(true);
+                    setIsLiked(false);
+                    handleReaction(true, false, id);
+                  }}
+                />
+              )}
+              <Text>40</Text>
+            </HStack>
           </>
         )}
       </CardBody>
