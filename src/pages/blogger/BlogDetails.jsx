@@ -23,7 +23,6 @@ import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
 import ReactionModal from "../../components/Modals/ReactionModal";
-import Tooltip from "../../components/Tooltip";
 
 const BlogDetails = () => {
   const params = useParams();
@@ -48,12 +47,14 @@ const BlogDetails = () => {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
+
   const [totalReactions, setTotalReactions] = useState(0);
   const [likedReactions, setLikedReactions] = useState(null);
   const [dislikedReactions, setDislikedReactions] = useState(null);
 
   useEffect(() => {
     calculateTotalReactions();
+    //eslint-disable-next-line
   }, [reactions]);
 
   const calculateTotalReactions = () => {
@@ -75,6 +76,7 @@ const BlogDetails = () => {
     fetchPosts();
     fetchComments();
     fetchPostReactions();
+    
     //eslint-disable-next-line
   }, []);
 
@@ -270,7 +272,9 @@ const BlogDetails = () => {
             />
           </Box>
         )}
-        <Text _hover={{cursor: "pointer"}} onClick={() => onOpen()}>{totalReactions}</Text>
+        <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
+          {totalReactions}
+        </Text>
         {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
         </Tooltip> */}
       </HStack>

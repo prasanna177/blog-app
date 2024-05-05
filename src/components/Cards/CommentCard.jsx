@@ -35,6 +35,12 @@ const CommentCard = ({
 
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const [allReactions, setAllReactions] = useState([]);
+
+  useEffect(() => {
+    fetchReactions();
+    //eslint-disable-next-line
+  }, []);
 
   const {
     isOpen: isDeleteOpen,
@@ -90,6 +96,30 @@ const CommentCard = ({
     }
   };
 
+  const handleDeleteReaction = async () => {
+    try {
+      const reaction = allReactions.find(
+        (reaction) => reaction.user === user && reaction.postId === id
+      );
+      console.log(id);
+      console.log(reaction, "deletedReaction");
+      const reactionId = reaction?.id;
+      console.log(reactionId, "rx");
+      const response = await axios.delete(
+        `https://localhost:7141/api/PostReactions/${reactionId}`
+      );
+      console.log(response, "reactionRes");
+      if (response.status === 204) {
+        setIsLiked(false);
+        setIsDisliked(false);
+        fetchReactions();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  };
+
   const handleDelete = async () => {
     try {
       const submissionData = {
@@ -123,6 +153,36 @@ const CommentCard = ({
   // useEffect(() => {
   //   fetchCommentor()
   // })
+  const fetchReactions = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7141/api/PostReactions`
+      );
+      setAllReactions(response.data);
+      if (response.data.length > 0) {
+        const userReactions = response.data.filter(
+          (reaction) => reaction.user === user
+        );
+        for (let userReaction of userReactions) {
+          if (userReaction) {
+            setIsLiked(userReaction.isPositive);
+            setIsDisliked(!userReaction.isPositive);
+          } else {
+            setIsLiked(false);
+            setIsDisliked(false);
+          }
+        }
+      } else {
+        // Reset isLiked and isDisliked states if there are no reactions
+        setIsLiked(false);
+        setIsDisliked(false);
+      }
+    } catch (error) {
+      console.log("Error in fetching post reactions", error);
+    }
+  };
+  console.log(allReactions, "allReactions");
+
   return (
     <Card>
       <DeleteComment
@@ -170,6 +230,7 @@ const CommentCard = ({
                   color="blue"
                   onClick={() => {
                     console.log("removed liked");
+                    handleDeleteReaction();
                   }}
                 />
               ) : (
@@ -185,6 +246,7 @@ const CommentCard = ({
                   color="blue"
                   onClick={() => {
                     console.log("removed dislike");
+                    handleDeleteReaction();
                   }}
                 />
               ) : (
