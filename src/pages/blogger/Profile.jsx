@@ -23,7 +23,7 @@ const Profile = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleDelete = async () => {
+  const handleDeleteProfile = async () => {
     try {
       const response = await axios.delete(
         `https://localhost:7141/api/Users/${user?.id}`
@@ -77,7 +77,7 @@ const Profile = () => {
         }
         onClose={onClose}
         isOpen={isOpen}
-        handleDelete={handleDelete}
+        handleDelete={handleDeleteProfile}
       />
       {user?.id === profileUser?.id && (
         <HStack>
@@ -113,8 +113,10 @@ const Profile = () => {
             <BlogCard
               key={post.id}
               onClick={() => handleBlogClick(post.id)}
+              blogId={post.id}
               title={post.title}
               body={post.body}
+              isProfile={true}
             />
           ))}
         </VStack>

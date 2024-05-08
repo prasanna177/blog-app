@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import ImageInput from "../../components/ImageInput";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import TextField from "../../components/TextField";
 import { useForm } from "react-hook-form";
 import { Button } from "@chakra-ui/react";
@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 const EditProfile = () => {
   const { user } = useSelector((state) => state.user);
   const [profilePic, setProfilePic] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const schema = yup.object({
     name: yup.string().required("Name address is required"),
