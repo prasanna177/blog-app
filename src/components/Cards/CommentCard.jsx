@@ -26,13 +26,15 @@ const CommentCard = ({
   userId,
   createdAt,
   fetchComments,
-  handleReaction,
+  // handleReaction,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [commentValue, setCommentValue] = useState(content);
   const inputRef = useRef(null);
   const params = useParams();
-
+  const [reactions, setReactions] = useState([]);
+  // const [likedReactions, setLikedReactions] = useState(null);
+  //const [dislikedReactions, setDislikedReactions] = useState;
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [allReactions, setAllReactions] = useState([]);
@@ -61,6 +63,68 @@ const CommentCard = ({
     setIsEditMode(true);
   };
 
+  const handleReaction = async (isPositive, id) => {
+    try {
+      const existingReaction = reactions?.find(
+        (reaction) => reaction.user === user && reaction.postId === Number(id)
+      );
+
+      if (existingReaction) {
+        await handleDeleteReaction();
+      }
+      const response = await axios.post(
+        "https://localhost:7141/api/PostReactions",
+        {
+          isPositive,
+          user,
+          postId: id,
+          isCommentReaction: true,
+          createdAt: new Date(),
+        }
+      );
+      fetchPostReactions();
+      console.log(response, "reactionRes");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  };
+  const fetchPostReactions = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7141/api/PostReactions/CommentReactions/${params.id}`
+      );
+      const likedReactions = response.data.filter(
+        (reaction) =>
+          reaction.isPositive === true && reaction.isCommentReaction === false
+      );
+      const dislikedReactions = response.data.filter(
+        (reaction) =>
+          reaction.isPositive === false && reaction.isCommentReaction === false
+      );
+      //  setLikedReactions(likedReactions);
+      //   setDislikedReactions(dislikedReactions);
+      setReactions(response.data);
+      if (response.data.length > 0) {
+        const userReaction = response.data.find(
+          (reaction) => reaction.user === user
+        );
+        if (userReaction) {
+          setIsLiked(userReaction.isPositive);
+          setIsDisliked(!userReaction.isPositive);
+        } else {
+          setIsLiked(false);
+          setIsDisliked(false);
+        }
+      } else {
+        // Reset isLiked and isDisliked states if there are no reactions
+        setIsLiked(false);
+        setIsDisliked(false);
+      }
+    } catch (error) {
+      console.log("Error in fetching post reactions", error);
+    }
+  };
   const handleInputEdit = async (e) => {
     if (e.key === "Escape") {
       setCommentValue(content);
@@ -156,7 +220,7 @@ const CommentCard = ({
   const fetchReactions = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7141/api/PostReactions`
+        `https://localhost:7141/api/PostReactions/CommentReactions/${id}`
       );
       setAllReactions(response.data);
       if (response.data.length > 0) {
@@ -237,7 +301,7 @@ const CommentCard = ({
                 <FaRegThumbsUp
                   color="blue"
                   onClick={() => {
-                    handleReaction(true, true, id);
+                    handleReaction(true, id);
                   }}
                 />
               )}
@@ -253,7 +317,7 @@ const CommentCard = ({
                 <FaRegThumbsDown
                   color="blue"
                   onClick={() => {
-                    handleReaction(true, false, id);
+                    handleReaction(false, id);
                   }}
                 />
               )}

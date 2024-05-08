@@ -1,22 +1,10 @@
-import { Button } from "@chakra-ui/react";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import Layout from "../../components/Layout/Layout";
 
 const AdminHome = () => {
-  const navigate = useNavigate();
   return (
-    <div>
+    <Layout>
       <p>Admin Home</p>
-      <Button
-        onClick={() => {
-          localStorage.clear();
-          toast.success("Logged out successfully");
-          navigate("/login");
-        }}
-      >
-        Logout
-      </Button>
-    </div>
+    </Layout>
   );
 };
 

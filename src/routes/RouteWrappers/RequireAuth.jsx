@@ -8,7 +8,8 @@ import { setUser } from "../../redux/features/userSlice";
 const RequireAuth = ({ children, userRoles }) => {
   const dispatch = useDispatch();
 
-  const decodedToken = jwtDecode(localStorage.getItem("token"));
+  const decodedToken =
+    localStorage.getItem("token") && jwtDecode(localStorage.getItem("token"));
 
   const clearLocalStorageOnError = (error) => {
     if (error.response && error.response.status === 403) {
@@ -33,13 +34,24 @@ const RequireAuth = ({ children, userRoles }) => {
   }, []);
 
   let currentUserRole;
-  let userId;
   if (localStorage.getItem("token")) {
-    userId =
+    const userId =
       decodedToken[
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
       ];
-    dispatch(setUser(userId));
+    const role =
+      decodedToken[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ];
+    const email =
+      decodedToken[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+      ];
+    const name =
+      decodedToken[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+      ];
+    dispatch(setUser({ userId, role, email, name }));
     currentUserRole =
       decodedToken[
         "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"

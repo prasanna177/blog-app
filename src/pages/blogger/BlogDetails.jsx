@@ -76,7 +76,7 @@ const BlogDetails = () => {
     fetchPosts();
     fetchComments();
     fetchPostReactions();
-    
+
     //eslint-disable-next-line
   }, []);
 
@@ -185,7 +185,7 @@ const BlogDetails = () => {
   const fetchPostReactions = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7141/api/PostReactions/ByPostId/${params.id}`
+        `https://localhost:7141/api/PostReactions/NonCommentReactions/${params.id}`
       );
       const likedReactions = response.data.filter(
         (reaction) =>

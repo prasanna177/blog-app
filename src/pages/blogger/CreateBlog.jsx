@@ -10,6 +10,7 @@ import TextareaField from "../../components/TextareaField";
 import toast from "react-hot-toast";
 import BlogCard from "../../components/Cards/BlogCard";
 import { useNavigate } from "react-router-dom";
+import Layout from "../../components/Layout/Layout";
 
 const CreateBlog = () => {
   const navigate = useNavigate();
@@ -27,7 +28,6 @@ const CreateBlog = () => {
   const schema = yup.object({
     title: yup.string().required("Title is required"),
     body: yup.string().required("Body is required"),
-    author: yup.string().required("Please enter author's no."),
   });
 
   const {
@@ -85,7 +85,7 @@ const CreateBlog = () => {
   console.log(posts, "posts");
 
   return (
-    <div>
+    <Layout>
       <h2>CREATE POST FORM</h2>
       <form onSubmit={handleSubmit(handlePostSubmit)}>
         <TextField
@@ -126,7 +126,7 @@ const CreateBlog = () => {
           />
         ))}
       </VStack>
-    </div>
+    </Layout>
   );
 };
 

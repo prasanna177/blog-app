@@ -1,4 +1,4 @@
-import { extendTheme } from "@chakra-ui/react";
+import { background, extendTheme } from "@chakra-ui/react";
 import colors from "./colors";
 import { fontSizes, fontWeights, fonts } from "./fonts";
 import Text from "./text";
@@ -14,6 +14,7 @@ export const theme = extendTheme({
       body: {
         fontSize: "2xl",
         fontWeight: 600,
+        backgroundColor: 'gray.0'
       },
     },
   },

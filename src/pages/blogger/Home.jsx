@@ -2,6 +2,7 @@ import { Button, Input, Select, Text } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Layout from "../../components/Layout/Layout";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -131,7 +132,7 @@ const Home = () => {
     setLoading(false);
   };
   return (
-    <div>
+    <Layout>
       <Button
         onClick={() => {
           localStorage.clear();
@@ -253,7 +254,7 @@ const Home = () => {
           </ul>
         )}
       </div>
-    </div>
+    </Layout>
   );
 };
 
