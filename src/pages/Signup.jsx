@@ -27,7 +27,8 @@ const Signup = () => {
   const handleSignupSubmit = async (data) => {
     try {
       console.log(data, "data");
-      data.role = "admin";
+      data.role = "user";
+      data.profilePic = "";
       const response = await axios.post(
         `https://localhost:7141/api/Auth/signup`,
         data

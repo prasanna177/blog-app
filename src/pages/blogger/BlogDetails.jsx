@@ -23,6 +23,7 @@ import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
 import ReactionModal from "../../components/Modals/ReactionModal";
+import Layout from "../../components/Layout/Layout";
 
 const BlogDetails = () => {
   const params = useParams();
@@ -83,17 +84,15 @@ const BlogDetails = () => {
   const handleReaction = async (isCommentReaction, isPositive, id) => {
     try {
       const existingReaction = reactions?.find(
-        (reaction) => reaction.user === user && reaction.postId === Number(id)
+        (reaction) =>
+          reaction.user === user.userId && reaction.postId === Number(id)
       );
 
-      if (existingReaction) {
-        await handleDeleteReaction();
-      }
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user,
+          user: user.userId,
           postId: id,
           isCommentReaction,
           createdAt: new Date(),
@@ -107,28 +106,28 @@ const BlogDetails = () => {
     }
   };
 
-  const handleDeleteReaction = async () => {
-    try {
-      const reaction = reactions.find(
-        (reaction) =>
-          reaction.user === user && reaction.postId === Number(params.id)
-      );
-      const id = reaction?.id;
-      console.log(id);
-      const response = await axios.delete(
-        `https://localhost:7141/api/PostReactions/${id}`
-      );
-      console.log(response, "reactionRes");
-      if (response.status === 204) {
-        setIsLiked(false);
-        setIsDisliked(false);
-        fetchPostReactions();
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message || "Something went wrong");
-    }
-  };
+  // const handleDeleteReaction = async () => {
+  //   try {
+  //     const reaction = reactions.find(
+  //       (reaction) =>
+  //         reaction.user === user.userId && reaction.postId === Number(params.id)
+  //     );
+  //     const id = reaction?.id;
+  //     console.log(id);
+  //     const response = await axios.delete(
+  //       `https://localhost:7141/api/PostReactions/${id}`
+  //     );
+  //     console.log(response, "reactionRes");
+  //     if (response.status === 204) {
+  //       setIsLiked(false);
+  //       setIsDisliked(false);
+  //       fetchPostReactions();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(error.response.data.message || "Something went wrong");
+  //   }
+  // };
 
   const handleComment = async (data) => {
     try {
@@ -137,7 +136,7 @@ const BlogDetails = () => {
       }
       const submissionData = {
         ...data,
-        user,
+        user: user.userId,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -200,7 +199,7 @@ const BlogDetails = () => {
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
-          (reaction) => reaction.user === user
+          (reaction) => reaction.user === user.userId
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
@@ -223,7 +222,7 @@ const BlogDetails = () => {
   console.log(reactions, "reactions");
 
   return (
-    <Box>
+    <Layout>
       <ReactionModal
         isOpen={isOpen}
         onClose={onClose}
@@ -236,8 +235,7 @@ const BlogDetails = () => {
             <FaThumbsUp
               color="blue"
               onClick={() => {
-                console.log("removed liked");
-                handleDeleteReaction();
+                handleReaction(false, true, params.id); //isCommentReaction, isPositive, id
               }}
             />
           </Box>
@@ -257,8 +255,7 @@ const BlogDetails = () => {
             <FaThumbsDown
               color="blue"
               onClick={() => {
-                handleDeleteReaction();
-                console.log("removed dislike");
+                handleReaction(false, false, params.id);
               }}
             />
           </Box>
@@ -296,22 +293,25 @@ const BlogDetails = () => {
       <Text>Comments</Text>
       {comments.length > 0 ? (
         <VStack alignItems={"stretch"}>
-          {comments.map((comment) => (
-            <CommentCard
-              key={comment.id}
-              id={comment.id}
-              content={comment.content}
-              userId={comment.user}
-              createdAt={comment.createdAt}
-              fetchComments={fetchComments}
-              handleReaction={handleReaction}
-            />
-          ))}
+          {comments.map((comment) => {
+            console.log(comment, "comm");
+            return (
+              <CommentCard
+                key={comment.id}
+                id={comment.id}
+                content={comment.content}
+                userId={comment.user}
+                createdAt={comment.createdAt}
+                fetchComments={fetchComments}
+                handleReaction={handleReaction}
+              />
+            );
+          })}
         </VStack>
       ) : (
         <Text>No comments</Text>
       )}
-    </Box>
+    </Layout>
   );
 };
 

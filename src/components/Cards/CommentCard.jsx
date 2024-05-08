@@ -66,18 +66,16 @@ const CommentCard = ({
   const handleReaction = async (isPositive, id) => {
     try {
       const existingReaction = reactions?.find(
-        (reaction) => reaction.user === user && reaction.postId === Number(id)
+        (reaction) =>
+          reaction.user === user.userId && reaction.postId === Number(id)
       );
-
-      if (existingReaction) {
-        await handleDeleteReaction();
-      }
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user,
-          postId: id,
+          user: user.userId,
+          postId: params.id,
+          commentId: id,
           isCommentReaction: true,
           createdAt: new Date(),
         }
@@ -107,7 +105,7 @@ const CommentCard = ({
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
-          (reaction) => reaction.user === user
+          (reaction) => reaction.user === user.userId
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
@@ -134,7 +132,7 @@ const CommentCard = ({
       try {
         const submissionData = {
           content: commentValue,
-          user,
+          user: user.userId,
           createdAt: new Date(),
           postId: params.id,
         };
@@ -160,35 +158,35 @@ const CommentCard = ({
     }
   };
 
-  const handleDeleteReaction = async () => {
-    try {
-      const reaction = allReactions.find(
-        (reaction) => reaction.user === user && reaction.postId === id
-      );
-      console.log(id);
-      console.log(reaction, "deletedReaction");
-      const reactionId = reaction?.id;
-      console.log(reactionId, "rx");
-      const response = await axios.delete(
-        `https://localhost:7141/api/PostReactions/${reactionId}`
-      );
-      console.log(response, "reactionRes");
-      if (response.status === 204) {
-        setIsLiked(false);
-        setIsDisliked(false);
-        fetchReactions();
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.message || "Something went wrong");
-    }
-  };
+  // const handleDeleteReaction = async () => {
+  //   try {
+  //     const reaction = allReactions.find(
+  //       (reaction) => reaction.user === user.userId && reaction.postId === id
+  //     );
+  //     console.log(id);
+  //     console.log(reaction, "deletedReaction");
+  //     const reactionId = reaction?.id;
+  //     console.log(reactionId, "rx");
+  //     const response = await axios.delete(
+  //       `https://localhost:7141/api/PostReactions/${reactionId}`
+  //     );
+  //     console.log(response, "reactionRes");
+  //     if (response.status === 204) {
+  //       setIsLiked(false);
+  //       setIsDisliked(false);
+  //       fetchReactions();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(error.response.data.message || "Something went wrong");
+  //   }
+  // };
 
   const handleDelete = async () => {
     try {
       const submissionData = {
         content: commentValue,
-        user,
+        user: user.userId,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -225,7 +223,7 @@ const CommentCard = ({
       setAllReactions(response.data);
       if (response.data.length > 0) {
         const userReactions = response.data.filter(
-          (reaction) => reaction.user === user
+          (reaction) => reaction.user === user.userId
         );
         for (let userReaction of userReactions) {
           if (userReaction) {
@@ -272,7 +270,8 @@ const CommentCard = ({
         ) : (
           <Text>Comment: {content}</Text>
         )}
-        {user === userId && !isEditMode && (
+        {console.log(userId, user.userId, "aaaa")}
+        {user.userId === userId && !isEditMode && (
           <>
             <Button
               bg={"warning.200"}
@@ -288,43 +287,43 @@ const CommentCard = ({
             >
               Delete
             </Button>
-            <HStack>
-              {isLiked ? (
-                <FaThumbsUp
-                  color="blue"
-                  onClick={() => {
-                    console.log("removed liked");
-                    handleDeleteReaction();
-                  }}
-                />
-              ) : (
-                <FaRegThumbsUp
-                  color="blue"
-                  onClick={() => {
-                    handleReaction(true, id);
-                  }}
-                />
-              )}
-              {isDisliked ? (
-                <FaThumbsDown
-                  color="blue"
-                  onClick={() => {
-                    console.log("removed dislike");
-                    handleDeleteReaction();
-                  }}
-                />
-              ) : (
-                <FaRegThumbsDown
-                  color="blue"
-                  onClick={() => {
-                    handleReaction(false, id);
-                  }}
-                />
-              )}
-              <Text>40</Text>
-            </HStack>
           </>
         )}
+        <HStack>
+          {isLiked ? (
+            <FaThumbsUp
+              color="blue"
+              onClick={() => {
+                console.log("removed liked");
+                handleReaction(true, id);
+              }}
+            />
+          ) : (
+            <FaRegThumbsUp
+              color="blue"
+              onClick={() => {
+                handleReaction(true, id);
+              }}
+            />
+          )}
+          {isDisliked ? (
+            <FaThumbsDown
+              color="blue"
+              onClick={() => {
+                console.log("removed dislike");
+                handleReaction(false, id);
+              }}
+            />
+          ) : (
+            <FaRegThumbsDown
+              color="blue"
+              onClick={() => {
+                handleReaction(false, id);
+              }}
+            />
+          )}
+          <Text>40</Text>
+        </HStack>
       </CardBody>
     </Card>
   );

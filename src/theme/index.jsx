@@ -1,4 +1,4 @@
-import { background, extendTheme } from "@chakra-ui/react";
+import { extendTheme } from "@chakra-ui/react";
 import colors from "./colors";
 import { fontSizes, fontWeights, fonts } from "./fonts";
 import Text from "./text";
