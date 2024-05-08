@@ -34,29 +34,31 @@ const RequireAuth = ({ children, userRoles }) => {
   }, []);
 
   let currentUserRole;
+  let userId;
   if (localStorage.getItem("token")) {
-    const userId =
+    userId =
       decodedToken[
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
       ];
-    const role =
-      decodedToken[
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-      ];
-    const email =
-      decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-      ];
-    const name =
-      decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-      ];
-    dispatch(setUser({ userId, role, email, name }));
     currentUserRole =
       decodedToken[
         "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
       ];
   }
+
+  const getUser = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7141/api/Users/${userId}`);
+      dispatch(setUser(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUser();
+    //eslint-disable-next-line
+  }, []);
+
   if (currentUserRole) {
     if (userRoles) {
       if (userRoles.includes(currentUserRole)) {

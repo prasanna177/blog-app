@@ -20,7 +20,7 @@ const Notifications = () => {
   const fetchNotificaitons = async () => {
     try {
       const response = await axios.get(
-        `https://localhost:7141/api/Users/Notifications/${user.userId}`
+        `https://localhost:7141/api/Users/Notifications/${user?.id}`
       );
       setNotifications(response.data);
       console.log(response, "resp");
@@ -32,7 +32,6 @@ const Notifications = () => {
   useEffect(() => {
     fetchNotificaitons();
   }, []);
-  console.log(notifications,'n')
 
   return (
     <Menu>
@@ -51,7 +50,7 @@ const Notifications = () => {
           >
             {notifications != 0 &&
               (notifications?.length <= 9 ? notifications.length : "9+")}
-          </Box>  
+          </Box>
         </Flex>
       </MenuButton>
       <MenuList

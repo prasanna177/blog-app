@@ -61,7 +61,7 @@ const ProfilePopup = () => {
           <Avatar
             size={"sm"}
             src={
-              localStorage.getItem("token") &&
+              (localStorage.getItem("token") && user?.profilePic) ||
               createImageFromInitials(user?.name)
             }
           />

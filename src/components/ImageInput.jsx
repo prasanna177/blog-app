@@ -2,13 +2,7 @@ import { Box, Image, Input, Text, VStack } from "@chakra-ui/react";
 import ImagePlaceholder from "../assets/images/image_placeholder.png";
 import { useRef } from "react";
 
-const ImageInput = ({
-  width,
-  height,
-  text,
-  image,
-  handleImageChange,
-}) => {
+const ImageInput = ({ width, height, text, image, handleImageChange }) => {
   const inputRef = useRef(null);
 
   const handleImageClick = () => {
@@ -33,7 +27,7 @@ const ImageInput = ({
                 typeof image === "object"
                   ? URL.createObjectURL(image)
                   : typeof image === "string"
-                  ? `https://localhost:7141/${image}`
+                  ? image
                   : true
               }
             />

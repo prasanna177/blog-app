@@ -11,11 +11,14 @@ import toast from "react-hot-toast";
 import BlogCard from "../../components/Cards/BlogCard";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
+import { useSelector } from "react-redux";
 
 const CreateBlog = () => {
+  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [blogImage, setBlogImage] = useState("");
   const [posts, setPosts] = useState(null);
+  console.log(posts);
 
   const handleImageChange = (e, setImage) => {
     setImage(e.target.files[0]);
@@ -48,6 +51,7 @@ const CreateBlog = () => {
         formData
       );
       data.images = filePathUrl.data;
+      data.author = user?.id;
       data.createdAt = new Date();
       console.log(data, "data");
       const response = await axios.post(
@@ -105,12 +109,6 @@ const CreateBlog = () => {
           height={"200px"}
           image={blogImage}
           handleImageChange={(e) => handleImageChange(e, setBlogImage)}
-        />
-        <TextField
-          name={"author"}
-          register={register}
-          placeholder={"Author"}
-          errors={errors?.author?.message}
         />
         <Button type="submit">Submit</Button>
       </form>

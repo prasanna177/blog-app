@@ -19,6 +19,7 @@ const Signup = () => {
   const {
     register,
     handleSubmit,
+
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -43,7 +44,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response.data.message || 'Something went wrong');
+      toast.error(error.response.data.message || "Something went wrong");
     }
   };
 

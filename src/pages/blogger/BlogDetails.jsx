@@ -83,16 +83,11 @@ const BlogDetails = () => {
 
   const handleReaction = async (isCommentReaction, isPositive, id) => {
     try {
-      const existingReaction = reactions?.find(
-        (reaction) =>
-          reaction.user === user.userId && reaction.postId === Number(id)
-      );
-
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user: user.userId,
+          user: user.id,
           postId: id,
           isCommentReaction,
           createdAt: new Date(),
@@ -136,7 +131,7 @@ const BlogDetails = () => {
       }
       const submissionData = {
         ...data,
-        user: user.userId,
+        user: user.id,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -199,7 +194,7 @@ const BlogDetails = () => {
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
-          (reaction) => reaction.user === user.userId
+          (reaction) => reaction.user === user.id
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
