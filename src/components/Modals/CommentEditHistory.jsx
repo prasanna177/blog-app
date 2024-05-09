@@ -33,8 +33,10 @@ const CommentEditHistory = ({ isOpen, onClose, editHistory }) => {
                 <VStack alignItems={"stretch"}>
                   {editHistory?.map((item) => (
                     <Box key={item.id}>
-                      <Text>
-                        {item.oldContent} edited to {item.newContent}
+                      <Text variant={"subtitle1"}>
+                        {item.oldContent}
+                        <span style={{ color: "blue" }}> edited to </span>
+                        {item.newContent}
                       </Text>
                       <HStack fontSize={"sm"} color={"gray.100"}>
                         <i className="fa-regular fa-clock"></i>

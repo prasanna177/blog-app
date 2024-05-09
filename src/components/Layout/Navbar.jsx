@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, HStack } from "@chakra-ui/react";
 import Notifications from "../Notifications";
 import ProfilePopup from "../ProfilePopup";
 import { useNavigate } from "react-router-dom";
@@ -15,22 +15,24 @@ const Navbar = () => {
           </HStack>
         ) : (
           <HStack>
-            <Text
-              _hover={{ cursor: "pointer" }}
+            <Button
+              bg={"primary.0"}
+              color={"white"}
               onClick={() => {
                 navigate("/login");
               }}
             >
               Login
-            </Text>
-            <Text
-              _hover={{ cursor: "pointer" }}
+            </Button>
+            <Button
+              bg={"primary.0"}
+              color={"white"}
               onClick={() => {
                 navigate("/signup");
               }}
             >
-              Sign up
-            </Text>
+              Signup
+            </Button>
           </HStack>
         )}
       </HStack>

@@ -1,3 +1,4 @@
+import { Box, Button, Heading, VStack } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import Layout from "../../components/Layout/Layout";
 import { useEffect, useState } from "react";
@@ -7,7 +8,6 @@ import ImageInput from "../../components/ImageInput";
 import { useNavigate } from "react-router-dom";
 import TextField from "../../components/TextField";
 import { useForm } from "react-hook-form";
-import { Button } from "@chakra-ui/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -72,29 +72,52 @@ const EditProfile = () => {
 
   return (
     <Layout>
-      <form onSubmit={handleSubmit(handleEditProfile)}>
-        <TextField
-          name={"name"}
-          register={register}
-          errors={errors?.name?.message}
-          placeholder={"Name"}
-        />
-        <TextField
-          name={"email"}
-          register={register}
-          errors={errors?.email?.message}
-          placeholder={"Email"}
-        />
-        <ImageInput
-          width={"200px"}
-          height={"200px"}
-          text={"Enter your photo here"}
-          image={profilePic}
-          handleImageChange={(e) => handleImageChange(e, setProfilePic)}
-          isProfileImg={true}
-        />
-        <Button type="submit">Save</Button>
-      </form>
+      <Box
+        maxW="400px"
+        mx="auto"
+        p="4"
+        bg="white"
+        boxShadow="md"
+        borderRadius="md"
+        textAlign="center"
+      >
+        <Heading
+          as="h2"
+          size="lg"
+          mb="4"
+          fontWeight="bold"
+          color="rgb(91, 59, 140)"
+        >
+          Edit your profile
+        </Heading>
+        <form onSubmit={handleSubmit(handleEditProfile)}>
+          <VStack spacing="4">
+            <TextField
+              name={"name"}
+              register={register}
+              errors={errors?.name?.message}
+              placeholder={"Name"}
+            />
+            <TextField
+              name={"email"}
+              register={register}
+              errors={errors?.email?.message}
+              placeholder={"Email"}
+            />
+            <ImageInput
+              width={"200px"}
+              height={"200px"}
+              text={"Enter your photo here"}
+              image={profilePic}
+              handleImageChange={(e) => handleImageChange(e, setProfilePic)}
+              isProfileImg={true}
+            />
+            <Button type="submit" bg={"primary.0"} color={"white"}>
+              Save
+            </Button>
+          </VStack>
+        </form>
+      </Box>
     </Layout>
   );
 };

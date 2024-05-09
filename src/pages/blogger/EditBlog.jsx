@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, VStack } from "@chakra-ui/react";
 import ImageInput from "../../components/ImageInput";
 import Layout from "../../components/Layout/Layout";
 import TextField from "../../components/TextField";
@@ -95,30 +95,34 @@ const EditBlog = () => {
   }, [blog, setValue]);
 
   return (
-    <Layout>
+    <Layout title={"Edit blog"}>
       <form onSubmit={handleSubmit(handleEdit)}>
-        <TextField
-          label={"Title"}
-          name={"title"}
-          placeholder={"title"}
-          register={register}
-          errors={errors?.title?.message}
-        />
-        <TextareaField
-          label={"Body"}
-          name={"body"}
-          placeholder={"body"}
-          register={register}
-          errors={errors?.body?.message}
-        />
-        <ImageInput
-          text={"Blog image"}
-          width={"200px"}
-          height={"200px"}
-          image={blogImage}
-          handleImageChange={(e) => handleImageChange(e, setBlogImage)}
-        />
-        <Button type="submit">Save</Button>
+        <VStack spacing={4} w={"500px"}>
+          <TextField
+            label={"Title"}
+            name={"title"}
+            placeholder={"title"}
+            register={register}
+            errors={errors?.title?.message}
+          />
+          <TextareaField
+            label={"Body"}
+            name={"body"}
+            placeholder={"body"}
+            register={register}
+            errors={errors?.body?.message}
+          />
+          <ImageInput
+            text={"Blog image"}
+            width={"200px"}
+            height={"200px"}
+            image={blogImage}
+            handleImageChange={(e) => handleImageChange(e, setBlogImage)}
+          />
+          <Button w={"100%"} bg={"primary.0"} color={"white"} type="submit">
+            Save
+          </Button>
+        </VStack>
       </form>
     </Layout>
   );

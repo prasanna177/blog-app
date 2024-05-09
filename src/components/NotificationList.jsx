@@ -13,7 +13,6 @@ const NotificationList = ({ notification }) => {
     <>
       {!notification?.length && "No new notifications"}
       {notification?.map((item, index) => {
-        console.log(item, "item");
         return (
           <Box key={index}>
             <MenuItem

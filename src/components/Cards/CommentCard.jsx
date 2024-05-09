@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { FaRegThumbsUp } from "react-icons/fa";
+import { FaEdit, FaRegThumbsUp, FaTrash } from "react-icons/fa";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
@@ -271,7 +271,12 @@ const CommentCard = ({
   } = useDisclosure();
 
   return (
-    <Card>
+    <Card
+      sx={{
+        fontSize: "16px",
+        width: "auto",
+      }}
+    >
       <ReactionModal
         isOpen={isReactionOpen}
         onClose={onReactionClose}
@@ -289,11 +294,11 @@ const CommentCard = ({
         isOpen={isHistoryOpen}
         editHistory={editHistory}
       />
-      <CardBody bg={"gray.100"}>
+      <CardBody bg={"gray.10"}>
         <HStack justifyContent={"space-between"}>
           <Box>
             <Text>User:{userId}</Text>
-            <Text>Date: {getDateAndTime(createdAt)}</Text>
+            <Text variant={"subtitle2"}>Date: {getDateAndTime(createdAt)}</Text>
             {isEditMode ? (
               <VStack align={"stretch"}>
                 <Textarea
@@ -309,24 +314,7 @@ const CommentCard = ({
             ) : (
               <Text>Comment: {content}</Text>
             )}
-            {user?.id === userId && !isEditMode && (
-              <>
-                <Button
-                  bg={"warning.200"}
-                  color={"white"}
-                  onClick={handleEditClick}
-                >
-                  Edit
-                </Button>
-                <Button
-                  bg={"error.100"}
-                  color={"white"}
-                  onClick={() => onDeleteOpen()}
-                >
-                  Delete
-                </Button>
-              </>
-            )}
+
             <HStack>
               {isLiked ? (
                 <FaThumbsUp
@@ -366,6 +354,26 @@ const CommentCard = ({
               >
                 {totalReactions}
               </Text>
+              {user?.id === userId && !isEditMode && (
+                <>
+                  <Button
+                    color={"warning.200"}
+                    onClick={handleEditClick}
+                    variant="ghost"
+                    leftIcon={<FaEdit />}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    color={"error.100"}
+                    onClick={() => onDeleteOpen()}
+                    variant="ghost"
+                    leftIcon={<FaTrash />}
+                  >
+                    Delete
+                  </Button>
+                </>
+              )}
             </HStack>
           </Box>
           <Box

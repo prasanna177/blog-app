@@ -36,13 +36,13 @@ const ReactionModal = ({
         <ModalBody>
           <Tabs>
             <TabList>
-              <Tab>Likes</Tab>
-              <Tab>Dislikes</Tab>
+              <Tab>Likes ({likedReactions?.length})</Tab>
+              <Tab>Dislikes ({dislikedReactions?.length})</Tab>
             </TabList>
 
             <TabPanels>
               <TabPanel>
-                <VStack alignItems={'stretch'}>
+                <VStack alignItems={"stretch"}>
                   {likedReactions?.map((reaction) => (
                     <React.Fragment key={reaction.id}>
                       <HStack
@@ -66,10 +66,23 @@ const ReactionModal = ({
               </TabPanel>
               <TabPanel>
                 {dislikedReactions?.map((reaction) => (
-                  <HStack key={reaction.id}>
-                    <Text>{reaction.user}</Text>
-                    <Text>Disliked</Text>
-                  </HStack>
+                  <React.Fragment key={reaction.id}>
+                    <HStack
+                      onClick={() => navigate(`/profile/${reaction.user.id}`)}
+                      _hover={{ cursor: "pointer", bg: "gray.0" }}
+                    >
+                      <Avatar
+                        size={"sm"}
+                        src={
+                          reaction.user.profilePic ||
+                          createImageFromInitials(reaction.user.name)
+                        }
+                      ></Avatar>
+                      <Text>{reaction.user.name}</Text>
+                      <Text>Disliked</Text>
+                    </HStack>
+                    <Divider />
+                  </React.Fragment>
                 ))}
               </TabPanel>
             </TabPanels>

@@ -12,15 +12,11 @@ const ChangePassword = () => {
   const { user } = useSelector((state) => state.user);
 
   const schema = yup.object({
-    oldPassword: yup.string().required("Old password is required"),
+    currentPassword: yup.string().required("Old password is required"),
     newPassword: yup
       .string()
       .required("New password is required")
       .min(8, "Password must be at least 8 characters long"),
-    reEnteredPassword: yup
-      .string()
-      .required("Please type your password")
-      .oneOf([yup.ref("newPassword")], "Passwords do not match"),
   });
 
   const {
@@ -34,19 +30,13 @@ const ChangePassword = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_PORT}/api/auth/change-password`,
-        { ...data, userId: user.id },
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        }
+        `https://localhost:7141/api/Users/ChangePassword`,
+        { ...data, userId: user?.id }
       );
-      const { success, message } = response.data;
-      if (success) {
-        toast.success(message);
+      if (response.status === 200) {
+        toast.success("Password changed successfully");
       } else {
-        toast.error(message);
+        toast.error("Failed to change passsword");
       }
     } catch (err) {
       console.log(err);
@@ -54,7 +44,7 @@ const ChangePassword = () => {
     }
   };
   return (
-    <Layout>
+    <Layout title={"Change password"}>
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
@@ -69,9 +59,9 @@ const ChangePassword = () => {
             register={register}
             label={"Enter old password"}
             autocomplete="new-password"
-            name={"oldPassword"}
-            errors={errors?.oldPassword?.message}
-            placeholder={"Old Password"}
+            name={"currentPassword"}
+            errors={errors?.currentPassword?.message}
+            placeholder={"Current Password"}
           />
           <Password
             width={"500px"}
@@ -81,15 +71,6 @@ const ChangePassword = () => {
             name={"newPassword"}
             errors={errors?.newPassword?.message}
             placeholder={"New Password"}
-          />
-          <Password
-            width={"500px"}
-            register={register}
-            label={"Re-enter new password"}
-            autocomplete="new-password"
-            name={"reEnteredPassword"}
-            errors={errors?.reEnteredPassword?.message}
-            placeholder={"Re-Enter password"}
           />
         </VStack>
         <Flex mt={5} w={"100%"} justifyContent={"start"}>

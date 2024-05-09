@@ -1,16 +1,23 @@
-import { FormControl, FormLabel, Select, Text, VStack } from "@chakra-ui/react";
+import { FormControl, FormLabel, Grid, Select, VStack } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
 import axios from "axios";
 import BlogCard from "../../components/Cards/BlogCard";
 import { sortData } from "../../data/sortData";
+import Pagination from "../../components/Pagination";
 
 const Home = () => {
   const navigate = useNavigate();
 
   const [posts, setPosts] = useState([]);
   const [sortBy, setSortBy] = useState("Random");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const fetchPosts = async () => {
     try {
@@ -49,11 +56,10 @@ const Home = () => {
   }, [sortBy]);
 
   return (
-    <Layout>
+    <Layout title={"Home"}>
       <VStack align={"stretch"}>
-        <Text variant={"heading1"}>Blogs</Text>
         <FormControl variant={"floating"}>
-          <Select onChange={handleSortByChange}>
+          <Select maxW={"200px"} onChange={handleSortByChange}>
             {sortData.map((item) => (
               <option key={item.id} value={item.sortItem}>
                 {item.sortItem}
@@ -70,17 +76,27 @@ const Home = () => {
             Sort by
           </FormLabel>
         </FormControl>
-        <VStack align={"stretch"}>
-          {posts?.map((post) => (
-            <BlogCard
-              key={post.id}
-              onClick={() => handleBlogClick(post.id)}
-              title={post.title}
-              body={post.body}
-              blogId={post.id}
-            />
-          ))}
+        <VStack alignItems={"stretch"}>
+          <Grid templateColumns="repeat(5, 1fr)" gap={"16px"}>
+            {posts?.map((post) => (
+              <BlogCard
+                key={post.id}
+                onClick={() => handleBlogClick(post.id)}
+                title={post.title}
+                body={post.body}
+                blogId={post.id}
+                image={post.images}
+                date={post.createdAt}
+              />
+            ))}
+          </Grid>
         </VStack>
+        <Pagination
+          currentPage={currentPage}
+          pageSize={pageSize}
+          totalPosts={posts.length} // Assuming totalPosts is the total number of posts from the API
+          onPageChange={handlePageChange}
+        />
       </VStack>
     </Layout>
   );

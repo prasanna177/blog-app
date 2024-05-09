@@ -9,7 +9,6 @@ import ImageComponent from "../components/ImageComponent";
 const EditHistory = () => {
   const params = useParams();
   const [editHistory, setEditHistory] = useState([]);
-  console.log(editHistory, "ee");
 
   const fetchEditHistory = async () => {
     try {
@@ -33,23 +32,46 @@ const EditHistory = () => {
         <VStack>
           {editHistory?.map((item) => (
             <React.Fragment key={item.id}>
-              <VStack align={"start"}>
+              <VStack pl={"15px"} w={"100%"} align={"start"}>
                 <Text>{getDateAndTime(item.updatedAt)}</Text>
               </VStack>
-              <Grid w={"100%"} templateColumns="repeat(2, 1fr)" gap={"16px"}>
-                <GridItem>
+              <Grid
+                p={5}
+                w={"100%"}
+                templateColumns="repeat(2, 1fr)"
+                gap={"16px"}
+              >
+                <GridItem
+                  style={{
+                    padding: "12px",
+                    boxShadow: "0px 0px 5px rgba(0,0,0,0.5)",
+                  }}
+                >
                   <VStack align={"stretch"}>
                     <Text variant={"heading1"}>Before edit</Text>
                     <Text>{item.oldTitle}</Text>
-                    <ImageComponent width={"400px"} src={item.oldImages} />
+                    <ImageComponent
+                      height={"300px"}
+                      width={"500px"}
+                      src={item.oldImages}
+                    />
                     <Text>{item.oldBody}</Text>
                   </VStack>
                 </GridItem>
-                <GridItem>
+                <GridItem
+                  style={{
+                    padding: "12px",
+                    boxShadow: "0px 0px 5px rgba(0,0,0,0.5)",
+                  }}
+                >
                   <VStack align={"stretch"}>
                     <Text variant={"heading1"}>After edit</Text>
                     <Text>{item.newTitle}</Text>
-                    <ImageComponent width={"400px"} src={item.newImages} />
+                    <ImageComponent
+                      height={"300px"}
+                      width={"500px"}
+                      src={item.newImages}
+                    />
                     <Text>{item.newBody}</Text>
                   </VStack>
                 </GridItem>
