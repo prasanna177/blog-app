@@ -11,15 +11,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import DeleteComment from "../Modals/DeleteComment";
+import { useSelector } from "react-redux";
 
-const BlogCard = ({
-  title,
-  body,
-  onClick,
-  isProfile,
-  blogId,
-}) => {
+const BlogCard = ({ title, body, onClick, isProfile, blogId, profileUser }) => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -55,7 +51,7 @@ const BlogCard = ({
               <Text>{title}</Text>
               <Text>{body}</Text>
             </Box>
-            {isProfile && (
+            {isProfile && user?.id === profileUser.id && (
               <Box>
                 <Button
                   onClick={(e) => {

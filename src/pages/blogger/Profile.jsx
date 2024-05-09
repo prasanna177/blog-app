@@ -99,7 +99,7 @@ const Profile = () => {
         </HStack>
       )}
 
-      <Text>{user?.name}</Text>
+      <Text>{profileUser?.name}</Text>
       <ImageComponent
         isProfileImg={true}
         borderRadius={"50%"}
@@ -112,6 +112,7 @@ const Profile = () => {
         <VStack alignItems={"stretch"}>
           {userBlogs?.map((post) => (
             <BlogCard
+              profileUser={profileUser}
               key={post.id}
               onClick={() => handleBlogClick(post.id)}
               blogId={post.id}
