@@ -9,29 +9,27 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import {
+  // FaEdit,
+  // FaTrash,
+  FaRegThumbsUp,
+  FaThumbsUp,
+  FaRegThumbsDown,
+  FaThumbsDown,
+} from "react-icons/fa";
+import { RepeatClockIcon } from "@chakra-ui/icons";
+
 import { getDateAndTime } from "../../utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { FaRegThumbsUp } from "react-icons/fa";
-import { FaThumbsUp } from "react-icons/fa";
-import { FaRegThumbsDown } from "react-icons/fa";
-import { FaThumbsDown } from "react-icons/fa";
 import DeleteComment from "../Modals/DeleteComment";
 import ReactionModal from "../Modals/ReactionModal";
-import { RepeatClockIcon } from "@chakra-ui/icons";
 import CommentEditHistory from "../Modals/CommentEditHistory";
 
-const CommentCard = ({
-  id,
-  content,
-  userId,
-  createdAt,
-  fetchComments,
-  // handleReaction,
-}) => {
+const CommentCard = ({ id, content, userId, createdAt, fetchComments }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [commentValue, setCommentValue] = useState(content);
   const inputRef = useRef(null);
@@ -43,8 +41,6 @@ const CommentCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [editHistory, setEditHistory] = useState([]);
-
-  // const [allReactions, setAllReactions] = useState([]);
 
   const navigate = useNavigate();
 
@@ -72,19 +68,13 @@ const CommentCard = ({
     setTotalReactions(total);
   };
 
-  const {
-    isOpen: isDeleteOpen,
-    onOpen: onDeleteOpen,
-    onClose: onDeleteClose,
-  } = useDisclosure();
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isEditMode]);
-
-  const { user } = useSelector((state) => state.user);
 
   const handleEditClick = () => {
     setIsEditMode(true);
@@ -124,6 +114,7 @@ const CommentCard = ({
       toast.error(error.response.data.message || "Something went wrong");
     }
   };
+
   const fetchPostReactions = async () => {
     try {
       const response = await axios.get(
@@ -160,7 +151,6 @@ const CommentCard = ({
       console.log("Error in fetching post reactions", error);
     }
   };
-  console.log(editHistory, "edit");
 
   const handleInputEdit = async (e) => {
     if (e.key === "Escape") {
@@ -199,18 +189,9 @@ const CommentCard = ({
 
   const handleDelete = async () => {
     try {
-      const submissionData = {
-        content: commentValue,
-        user: user?.id,
-        createdAt: new Date(),
-        postId: params.id,
-      };
-      console.log(submissionData);
       const response = await axios.delete(
-        `https://localhost:7141/api/Comments/${id}`,
-        submissionData
+        `https://localhost:7141/api/Comments/${id}`
       );
-      console.log(response);
       if (response.status === 204) {
         toast.success("Comment deleted");
         setIsEditMode(false);
@@ -223,19 +204,12 @@ const CommentCard = ({
       toast.error(error.response.data.message || "Something went wrong");
     }
   };
-  // const fetchCommentor = async () => {
-  //   const response = await axios.get()
-  // }
 
-  // useEffect(() => {
-  //   fetchCommentor()
-  // })
   const fetchReactions = async () => {
     try {
       const response = await axios.get(
         `https://localhost:7141/api/PostReactions/CommentReactions/${id}`
       );
-      // setAllReactions(response.data);
       if (response.data.length > 0) {
         const userReactions = response.data.filter(
           (reaction) => reaction.user === user.userId
@@ -260,18 +234,30 @@ const CommentCard = ({
   };
 
   const {
-    isOpen: isReactionOpen,
-    onOpen: onReactionOpen,
-    onClose: onReactionClose,
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onClose: onDeleteClose,
   } = useDisclosure();
+
   const {
     isOpen: isHistoryOpen,
     onOpen: onHistoryOpen,
     onClose: onHistoryClose,
   } = useDisclosure();
 
+  const {
+    isOpen: isReactionOpen,
+    onOpen: onReactionOpen,
+    onClose: onReactionClose,
+  } = useDisclosure();
+
   return (
-    <Card>
+    <Card
+      sx={{
+        fontSize: "16px",
+        width: "auto",
+      }}
+    >
       <ReactionModal
         isOpen={isReactionOpen}
         onClose={onReactionClose}
@@ -362,7 +348,10 @@ const CommentCard = ({
               )}
               <Text
                 _hover={{ cursor: "pointer" }}
-                onClick={() => onReactionOpen()}
+                onClick={() => {
+                  onHistoryOpen();
+                  onReactionOpen();
+                }}
               >
                 {totalReactions}
               </Text>

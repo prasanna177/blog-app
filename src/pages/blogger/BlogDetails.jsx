@@ -5,7 +5,15 @@ import {
   Text,
   VStack,
   useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,6 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import TextareaField from "../../components/TextareaField";
+import BlogCard from "../../components/Cards/BlogCard";
 import { getDateAndTime } from "../../utils";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -33,6 +42,11 @@ const BlogDetails = () => {
   const [isDisliked, setIsDisliked] = useState(false);
 
   const { user } = useSelector((state) => state.user);
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure();
 
   const schema = yup.object({
     content: yup.string().required("Enter your comment"),
@@ -48,6 +62,7 @@ const BlogDetails = () => {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
+  const [userBlogs, setUserBlogs] = useState(null);
 
   const [totalReactions, setTotalReactions] = useState(0);
   const [likedReactions, setLikedReactions] = useState(null);
@@ -72,6 +87,10 @@ const BlogDetails = () => {
     setTotalReactions(total);
   };
   console.log(totalReactions, "tot");
+
+  const handleBlogClick = (id) => {
+    navigate(`/blog/${id}`);
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -145,6 +164,8 @@ const BlogDetails = () => {
       console.log(response, "resComPost");
       if (response.status === 201) {
         fetchComments();
+        closeModal();
+
         toast.success("Comment added");
       } else {
         toast.error("Failed to add comment.");
@@ -176,6 +197,17 @@ const BlogDetails = () => {
       setComments(response.data);
     } catch (error) {
       console.log("Error in fetching comments", error);
+    }
+  };
+
+  const getUserBlogs = async () => {
+    try {
+      const res = await axios.get(
+        `https://localhost:7141/api/Posts/ByAuthor/${params.id}`
+      );
+      setUserBlogs(res.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -232,100 +264,167 @@ const BlogDetails = () => {
       console.log("Error in fetching post reactions", error);
     }
   };
+  useEffect(() => {
+    // getUser();
+    getUserBlogs();
+    //eslint-disable-next-line
+  }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(reactions, "reactions");
+  console.log(userBlogs, "------------------------");
 
   return (
-    <Layout>
-      <ReactionModal
-        isOpen={isOpen}
-        onClose={onClose}
-        likedReactions={likedReactions}
-        dislikedReactions={dislikedReactions}
-      />
-      <HStack>
-        {isLiked ? (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaThumbsUp
-              color="blue"
-              onClick={() => {
-                handleReaction(false, true, params.id); //isCommentReaction, isPositive, id
-              }}
-            />
-          </Box>
-        ) : (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaRegThumbsUp
-              color="blue"
-              onClick={() => {
-                handleReaction(false, true, params.id);
-                console.log("liked");
-              }}
-            />
-          </Box>
-        )}
-        {isDisliked ? (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaThumbsDown
-              color="blue"
-              onClick={() => {
-                handleReaction(false, false, params.id);
-              }}
-            />
-          </Box>
-        ) : (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaRegThumbsDown
-              color="blue"
-              onClick={() => {
-                handleReaction(false, false, params.id);
-              }}
-            />
-          </Box>
-        )}
-        <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
-          {totalReactions}
-        </Text>
-        {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
+    <Layout title={"Blog Details"}>
+      <div style={{ display: "flex" }}>
+        <div>
+          <ReactionModal
+            isOpen={isOpen}
+            onClose={onClose}
+            likedReactions={likedReactions}
+            dislikedReactions={dislikedReactions}
+          />
+          <HStack>
+            {isLiked ? (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, true, params.id); //isCommentReaction, isPositive, id
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaRegThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, true, params.id);
+                    console.log("liked");
+                  }}
+                />
+              </Box>
+            )}
+            {isDisliked ? (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, false, params.id);
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaRegThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, false, params.id);
+                  }}
+                />
+              </Box>
+            )}
+            <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
+              {totalReactions}
+            </Text>
+            {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
         </Tooltip> */}
-      </HStack>
-      <Text>{posts.title}</Text>
-      <Text>{getDateAndTime(posts.createdAt)}</Text>
-      <ImageComponent width={"400px"} src={posts.images} />
-      <Text>{posts.body}</Text>
-
+          </HStack>
+          <Text style={{ marginTop: "10px" }}>{posts.title}</Text>
+          <Text style={{ fontSize: "10px" }}>
+            {getDateAndTime(posts.createdAt)}
+          </Text>
+          <ImageComponent
+            style={{ marginTop: "10px" }}
+            width={"400px"}
+            src={posts.images}
+          />
+          <Text style={{ marginTop: "10px" }}>{posts.body}</Text>
+        </div>
+      </div>
       <form onSubmit={handleSubmit(handleComment)}>
-        <TextareaField
-          name={"content"}
-          placeholder={"Comment"}
-          register={register}
-          errors={errors?.content?.message}
-        />
-        <Button type="submit">Comment</Button>
+        <Button
+          onClick={openModal}
+          style={{ backgroundColor: "#5b3b8c", color: "white" }}
+        >
+          Add Comment
+        </Button>
       </form>
-
-      <Text>Comments</Text>
-      {comments.length > 0 ? (
-        <VStack alignItems={"stretch"}>
-          {comments.map((comment) => {
-            console.log(comment, "comm");
-            return (
-              <CommentCard
-                key={comment.id}
-                id={comment.id}
-                content={comment.content}
-                userId={comment.user}
-                createdAt={comment.createdAt}
-                fetchComments={fetchComments}
-                handleReaction={handleReaction}
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Comment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <form onSubmit={handleSubmit(handleComment)}>
+              <TextareaField
+                name={"content"}
+                placeholder={"Comment"}
+                register={register}
+                errors={errors?.content?.message}
               />
-            );
-          })}
+              <Button
+                type="submit"
+                style={{
+                  backgroundColor: "#5b3b8c",
+                  color: "white",
+                  marginTop: "10px",
+                }}
+              >
+                Comment
+              </Button>
+            </form>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </ModalContent>
+      </Modal>
+      <VStack alignItems={"stretch"} style={{ marginTop: "20px" }}>
+        {comments.map((comment) => {
+          console.log(comment, "comm");
+          return (
+            <CommentCard
+              key={comment.id}
+              id={comment.id}
+              content={comment.content}
+              userId={comment.user}
+              createdAt={comment.createdAt}
+              fetchComments={fetchComments}
+              handleReaction={handleReaction}
+            />
+          );
+        })}
+      </VStack>
+
+      <div
+        style={{
+          marginTop: "30px",
+        }}
+      >
+        <VStack alignItems={"stretch"}>
+          <Text>Users blogs</Text>
+          <VStack
+            alignItems="stretch"
+            spacing={4}
+            className="blog-grid"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
+            {" "}
+            {userBlogs?.map((post) => (
+              <BlogCard
+                key={post.id}
+                onClick={() => handleBlogClick(post.id)}
+                title={post.title}
+                body={post.body}
+                date={new Date(post.createdAt).toLocaleDateString()}
+                image={post.images}
+              />
+            ))}
+          </VStack>
         </VStack>
-      ) : (
-        <Text>No comments</Text>
-      )}
+      </div>
     </Layout>
   );
 };

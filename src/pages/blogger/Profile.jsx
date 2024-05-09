@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import Layout from "../../components/Layout/Layout";
 import { Button, HStack, Text, VStack, useDisclosure } from "@chakra-ui/react";
-// import ImageComponent from "../../components/ImageComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -83,6 +82,7 @@ const Profile = () => {
       {user?.id === profileUser?.id && (
         <HStack>
           <Button
+            style={{ backgroundColor: "rgb(91, 59, 140)", color: "white" }}
             onClick={() => {
               navigate(`/edit-profile/${params.id}`);
             }}
@@ -90,6 +90,7 @@ const Profile = () => {
             Edit profile
           </Button>
           <Button
+            style={{ backgroundColor: "rgb(91, 59, 140)", color: "white" }}
             onClick={() => {
               onOpen();
             }}
@@ -108,16 +109,27 @@ const Profile = () => {
         src={profileUser?.profilePic}
       />
       <VStack alignItems={"stretch"}>
-        <Text>Users blogs</Text>
-        <VStack alignItems={"stretch"}>
+        <Text>Blogs</Text>
+        <VStack
+          alignItems="stretch"
+          spacing={4}
+          className="blog-grid"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+          }}
+        >
+          {" "}
           {userBlogs?.map((post) => (
             <BlogCard
               profileUser={profileUser}
               key={post.id}
               onClick={() => handleBlogClick(post.id)}
-              blogId={post.id}
               title={post.title}
               body={post.body}
+              date={new Date(post.createdAt).toLocaleDateString()}
+              image={post.images}
               isProfile={true}
             />
           ))}
