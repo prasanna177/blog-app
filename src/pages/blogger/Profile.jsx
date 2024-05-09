@@ -121,24 +121,30 @@ const Profile = () => {
         />
       </VStack>
       <VStack alignItems={"stretch"}>
-        <Text mt={10} variant={'heading1'}>Posted blogs</Text>
-        <VStack alignItems={"stretch"}>
-          <Grid templateColumns="repeat(5, 1fr)" gap={"16px"}>
-            {userBlogs?.map((post) => (
-              <BlogCard
-                key={post.id}
-                onClick={() => handleBlogClick(post.id)}
-                title={post.title}
-                body={post.body}
-                blogId={post.id}
-                image={post.images}
-                date={post.createdAt}
-                profileUser={profileUser}
-                isProfile={true}
-              />
-            ))}
-          </Grid>
-        </VStack>
+        <Text mt={10} variant={"heading1"}>
+          Posted blogs
+        </Text>
+        {userBlogs ? (
+          <VStack alignItems={"stretch"}>
+            <Grid templateColumns="repeat(5, 1fr)" gap={"16px"}>
+              {userBlogs?.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  onClick={() => handleBlogClick(post.id)}
+                  title={post.title}
+                  body={post.body}
+                  blogId={post.id}
+                  image={post.images}
+                  date={post.createdAt}
+                  profileUser={profileUser}
+                  isProfile={true}
+                />
+              ))}
+            </Grid>
+          </VStack>
+        ) : (
+          <Text variant={"subtitle1"}>No blogs posted</Text>
+        )}
       </VStack>
 
       {/* <ImageComponent /> */}

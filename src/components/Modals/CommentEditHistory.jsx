@@ -18,7 +18,7 @@ const CommentEditHistory = ({ isOpen, onClose, editHistory }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit history</ModalHeader>
+          <ModalHeader>Comment Edit history</ModalHeader>
           <ModalCloseButton />
           <ModalBody pr={0}>
             <Box

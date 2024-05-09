@@ -54,7 +54,7 @@ const CreateBlog = () => {
       );
       if (response.status === 201) {
         toast.success("Post created successfully.");
-        navigate("/home");
+        navigate("/");
       } else {
         toast.error("Failed to create post");
       }
@@ -84,12 +84,14 @@ const CreateBlog = () => {
       <form onSubmit={handleSubmit(handlePostSubmit)}>
         <VStack spacing={4} w={"500px"}>
           <TextField
+            label={"Blog title"}
             name={"title"}
             placeholder={"Title"}
             register={register}
             errors={errors?.title?.message}
           />
           <TextareaField
+          label={"Blog content"}
             name={"body"}
             placeholder={"Body"}
             register={register}
@@ -100,12 +102,6 @@ const CreateBlog = () => {
             height={"200px"}
             image={blogImage}
             handleImageChange={(e) => handleImageChange(e, setBlogImage)}
-          />
-          <TextField
-            name={"author"}
-            register={register}
-            placeholder={"Author"}
-            errors={errors?.author?.message}
           />
           <Button
             w={"100%"}

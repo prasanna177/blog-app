@@ -12,6 +12,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  // Avatar,
 } from "@chakra-ui/react";
 
 import axios from "axios";
@@ -54,7 +55,7 @@ const BlogDetails = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const [posts, setPosts] = useState([]);
+  const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
 
@@ -62,7 +63,8 @@ const BlogDetails = () => {
   const [likedReactions, setLikedReactions] = useState(null);
   const [dislikedReactions, setDislikedReactions] = useState(null);
   const [userBlogs, setUserBlogs] = useState([]);
-
+  const [profileUser, setProfileUser] = useState(null);
+  // console.log(profileUser, "pp");
   const handleBlogClick = (id) => {
     navigate(`/blog/${id}`);
     fetchPosts();
@@ -70,16 +72,29 @@ const BlogDetails = () => {
     fetchPostReactions();
   };
 
-  const getUserBlogs = async () => {
-    try {
-      const res = await axios.get(
-        `https://localhost:7141/api/Posts/ByAuthor/${user?.id}`
-      );
-      setUserBlogs(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // console.log(userBlogs, "ujs");
+  // const getUser = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       `https://localhost:7141/api/Users/${posts?.author}`
+  //     );
+  //     setProfileUser(res.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  console.log(profileUser, "pp");
+
+  // const getUserBlogs = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       `https://localhost:7141/api/Posts/ByAuthor/${profileUser?.id}`
+  //     );
+  //     setUserBlogs(res.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   useEffect(() => {
     calculateTotalReactions();
     //eslint-disable-next-line
@@ -102,12 +117,13 @@ const BlogDetails = () => {
   useEffect(() => {
     fetchPosts();
     fetchComments();
-    getUserBlogs();
+    // getUserBlogs();
+    // getUser();
     fetchPostReactions();
 
     //eslint-disable-next-line
   }, []);
-
+  console.log(userBlogs, "uu");
   const handleReaction = async (isCommentReaction, isPositive, id) => {
     try {
       if (!localStorage.getItem("token")) {
@@ -184,7 +200,24 @@ const BlogDetails = () => {
         `https://localhost:7141/api/Posts/${params.id}`
       );
       if (response.status === 200) {
-        setPosts(response.data);
+        setPost(response.data);
+        try {
+          const res = await axios.get(
+            `https://localhost:7141/api/Users/${response?.data?.author}`
+          );
+          setProfileUser(res.data);
+        } catch (error) {
+          console.log(error);
+        }
+        try {
+          const res = await axios.get(
+            `https://localhost:7141/api/Posts/ByAuthor/${response?.data?.author}`
+          );
+          setUserBlogs(res.data);
+        } catch (error) {
+          console.log(error);
+        }
+        // getUser();
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -316,15 +349,31 @@ const BlogDetails = () => {
               {totalReactions}
             </Text>
           </HStack>
-          <Text style={{ marginTop: "10px" }}>{posts.title}</Text>
-          <Text variant={"subtitle2"}>{getDateAndTime(posts.createdAt)}</Text>
-          <ImageComponent
+          {/* <HStack
+            _hover={{ cursor: "pointer" }}
+            onClick={() => navigate(`/profile/${profileUser?.id}`)}
+          >
+            <Avatar size={"sm"} src={profileUser?.profilePic} />
+            <Text variant={"subtitle1"}>{profileUser?.name}</Text>
+          </HStack> */}
+          <Text style={{ marginTop: "10px" }}>{post?.title}</Text>
+          <Text variant={"subtitle2"}>{getDateAndTime(post?.createdAt)}</Text>
+          <VStack>
+            <ImageComponent
+              style={{ marginTop: "10px" }}
+              height={"400px"}
+              width={"600px"}
+              src={post?.images}
+            />
+          </VStack>
+          <Text
+            mb={10}
+            variant={"heading4"}
+            color={"black"}
             style={{ marginTop: "10px" }}
-            height={"300px"}
-            width={"500px"}
-            src={posts.images}
-          />
-          <Text style={{ marginTop: "10px" }}>{posts.body}</Text>
+          >
+            {post?.body}
+          </Text>
         </div>
       </div>
       <form onSubmit={handleSubmit(handleComment)}>
@@ -366,22 +415,23 @@ const BlogDetails = () => {
       {comments?.length > 0 ? (
         <VStack alignItems={"stretch"} style={{ marginTop: "20px" }}>
           {comments.map((comment) => (
-            <CommentCard
-              key={comment.id}
-              id={comment.id}
-              content={comment.content}
-              userId={comment.user}
-              createdAt={comment.createdAt}
-              fetchComments={fetchComments}
-              handleReaction={handleReaction}
-            />
+            <>
+              <CommentCard
+                key={comment.id}
+                id={comment.id}
+                content={comment.content}
+                userId={comment.user}
+                createdAt={comment.createdAt}
+                fetchComments={fetchComments}
+                handleReaction={handleReaction}
+              />
+            </>
           ))}
         </VStack>
       ) : (
         <Text variant={"heading1"}>No comments</Text>
       )}
 
-      {console.log(userBlogs, "asd")}
       {userBlogs.length > 0 && (
         <div
           style={{

@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Divider,
   HStack,
   Modal,
@@ -16,7 +17,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
 import { createImageFromInitials } from "../../utils";
 import { useNavigate } from "react-router-dom";
 
@@ -44,7 +44,7 @@ const ReactionModal = ({
               <TabPanel>
                 <VStack alignItems={"stretch"}>
                   {likedReactions?.map((reaction) => (
-                    <React.Fragment key={reaction.id}>
+                    <Box key={reaction.id}>
                       <HStack
                         onClick={() => navigate(`/profile/${reaction.user.id}`)}
                         _hover={{ cursor: "pointer", bg: "gray.0" }}
@@ -60,13 +60,13 @@ const ReactionModal = ({
                         <Text>Liked</Text>
                       </HStack>
                       <Divider />
-                    </React.Fragment>
+                    </Box>
                   ))}
                 </VStack>
               </TabPanel>
               <TabPanel>
                 {dislikedReactions?.map((reaction) => (
-                  <React.Fragment key={reaction.id}>
+                  <Box mb={5} key={reaction.id}>
                     <HStack
                       onClick={() => navigate(`/profile/${reaction.user.id}`)}
                       _hover={{ cursor: "pointer", bg: "gray.0" }}
@@ -82,7 +82,7 @@ const ReactionModal = ({
                       <Text>Disliked</Text>
                     </HStack>
                     <Divider />
-                  </React.Fragment>
+                  </Box>
                 ))}
               </TabPanel>
             </TabPanels>

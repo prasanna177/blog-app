@@ -69,6 +69,17 @@ const BlogCard = ({
         <CardBody>
           <HStack justifyContent={"space-between"}>
             <Box>
+              <Button
+                color={"primary.0"}
+                variant="ghost"
+                leftIcon={<RepeatClockIcon />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/blog/edit-history/${blogId}`);
+                }}
+              >
+                History
+              </Button>
               <HStack>
                 <Text
                   fontSize="xl"
@@ -78,17 +89,6 @@ const BlogCard = ({
                 >
                   {title}
                 </Text>
-                <Button
-                  color={"primary.0"}
-                  variant="ghost"
-                  leftIcon={<RepeatClockIcon />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/blog/edit-history/${blogId}`);
-                  }}
-                >
-                  History
-                </Button>
               </HStack>
               <Text fontSize="sm" color="gray.500" mb={2} fontFamily="body">
                 {getDateAndTime(date)}
@@ -113,7 +113,7 @@ const BlogCard = ({
                   : body}
               </Text>
 
-              {isProfile && user?.id === profileUser.id && (
+              {isProfile && user?.id === profileUser?.id && (
                 <HStack>
                   <Button
                     color={"warning.200"}

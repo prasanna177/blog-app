@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Card,
@@ -9,7 +10,7 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { getDateAndTime } from "../../utils";
+import { createImageFromInitials, getDateAndTime } from "../../utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -43,13 +44,24 @@ const CommentCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [editHistory, setEditHistory] = useState([]);
+  const [profileUser, setProfileUser] = useState(null);
 
   // const [allReactions, setAllReactions] = useState([]);
 
   const navigate = useNavigate();
 
+  const getUser = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7141/api/Users/${userId}`);
+      setProfileUser(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchReactions();
+    getUser();
     //eslint-disable-next-line
   }, []);
 
@@ -71,7 +83,6 @@ const CommentCard = ({
 
     setTotalReactions(total);
   };
-
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
@@ -297,7 +308,19 @@ const CommentCard = ({
       <CardBody bg={"gray.10"}>
         <HStack justifyContent={"space-between"}>
           <Box>
-            <Text>User:{userId}</Text>
+            <HStack
+              _hover={{ cursor: "pointer" }}
+              onClick={() => navigate(`/profile/${profileUser?.id}`)}
+            >
+              <Avatar
+                size={"sm"}
+                src={
+                  (localStorage.getItem("token") && profileUser?.profilePic) ||
+                  createImageFromInitials(profileUser?.name)
+                }
+              />
+              <Text>{profileUser?.name}</Text>
+            </HStack>
             <Text variant={"subtitle2"}>Date: {getDateAndTime(createdAt)}</Text>
             {isEditMode ? (
               <VStack align={"stretch"}>
@@ -312,7 +335,7 @@ const CommentCard = ({
                 </Text>
               </VStack>
             ) : (
-              <Text>Comment: {content}</Text>
+              <Text>{content}</Text>
             )}
 
             <HStack>
