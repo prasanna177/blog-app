@@ -8,6 +8,8 @@ import {
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
+import { FaEdit, FaTrash } from "react-icons/fa";
+
 import { getDateAndTime } from "../../utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -246,15 +248,22 @@ const CommentCard = ({
   console.log(allReactions, "allReactions");
 
   return (
-    <Card>
+    <Card
+      sx={{
+        fontSize: "16px",
+        width: "auto",
+      }}
+    >
       <DeleteComment
         onClose={onDeleteClose}
         isOpen={isDeleteOpen}
         handleDelete={handleDelete}
       />
-      <CardBody bg={"gray.100"}>
-        <Text>User:{userId}</Text>
-        <Text>Date: {getDateAndTime(createdAt)}</Text>
+      <CardBody bg={"gray.10"}>
+        <Text>{userId}</Text>
+        <Text style={{ fontSize: "10px" }}>
+          Date: {getDateAndTime(createdAt)}
+        </Text>
         {isEditMode ? (
           <VStack align={"stretch"}>
             <Input
@@ -268,27 +277,9 @@ const CommentCard = ({
             </Text>
           </VStack>
         ) : (
-          <Text>Comment: {content}</Text>
+          <Text style={{ fontSize: "15px" }}> {content}</Text>
         )}
-        {console.log(userId, user.userId, "aaaa")}
-        {user.userId === userId && !isEditMode && (
-          <>
-            <Button
-              bg={"warning.200"}
-              color={"white"}
-              onClick={handleEditClick}
-            >
-              Edit
-            </Button>
-            <Button
-              bg={"error.100"}
-              color={"white"}
-              onClick={() => onDeleteOpen()}
-            >
-              Delete
-            </Button>
-          </>
-        )}
+
         <HStack>
           {isLiked ? (
             <FaThumbsUp
@@ -322,7 +313,21 @@ const CommentCard = ({
               }}
             />
           )}
-          <Text>40</Text>
+          <Text>2</Text>
+          {user.userId === userId && !isEditMode && (
+            <div style={{ marginLeft: "30px" }}>
+              <Button
+                onClick={handleEditClick}
+                leftIcon={<FaEdit />}
+                bg="white"
+              ></Button>
+              <Button
+                onClick={() => onDeleteOpen()}
+                leftIcon={<FaTrash />}
+                bg="white"
+              ></Button>
+            </div>
+          )}
         </HStack>
       </CardBody>
     </Card>

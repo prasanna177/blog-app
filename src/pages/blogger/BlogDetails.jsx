@@ -5,7 +5,15 @@ import {
   Text,
   VStack,
   useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -33,6 +41,11 @@ const BlogDetails = () => {
   const [isDisliked, setIsDisliked] = useState(false);
 
   const { user } = useSelector((state) => state.user);
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure();
 
   const schema = yup.object({
     content: yup.string().required("Enter your comment"),
@@ -147,6 +160,8 @@ const BlogDetails = () => {
       console.log(response, "resComPost");
       if (response.status === 201) {
         fetchComments();
+        closeModal();
+
         toast.success("Comment added");
       } else {
         toast.error("Failed to add comment.");
@@ -276,41 +291,63 @@ const BlogDetails = () => {
         </Tooltip> */}
       </HStack>
       <Text>{posts.title}</Text>
-      <Text>{getDateAndTime(posts.createdAt)}</Text>
+      <Text style={{ fontSize: "10px" }}>
+        {getDateAndTime(posts.createdAt)}
+      </Text>
       <ImageComponent width={"400px"} src={posts.images} />
       <Text>{posts.body}</Text>
-
       <form onSubmit={handleSubmit(handleComment)}>
-        <TextareaField
-          name={"content"}
-          placeholder={"Comment"}
-          register={register}
-          errors={errors?.content?.message}
-        />
-        <Button type="submit">Comment</Button>
+        <Button
+          onClick={openModal}
+          style={{ backgroundColor: "#5b3b8c", color: "white" }}
+        >
+          Add Comment
+        </Button>
       </form>
-
-      <Text>Comments</Text>
-      {comments.length > 0 ? (
-        <VStack alignItems={"stretch"}>
-          {comments.map((comment) => {
-            console.log(comment, "comm");
-            return (
-              <CommentCard
-                key={comment.id}
-                id={comment.id}
-                content={comment.content}
-                userId={comment.user}
-                createdAt={comment.createdAt}
-                fetchComments={fetchComments}
-                handleReaction={handleReaction}
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Comment</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <form onSubmit={handleSubmit(handleComment)}>
+              <TextareaField
+                name={"content"}
+                placeholder={"Comment"}
+                register={register}
+                errors={errors?.content?.message}
               />
-            );
-          })}
-        </VStack>
-      ) : (
-        <Text>No comments</Text>
-      )}
+              <Button
+                type="submit"
+                style={{
+                  backgroundColor: "#5b3b8c",
+                  color: "white",
+                  marginTop: "10px",
+                }}
+              >
+                Comment
+              </Button>
+            </form>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </ModalContent>
+      </Modal>
+      <VStack alignItems={"stretch"} style={{ marginTop: "20px" }}>
+        {comments.map((comment) => {
+          console.log(comment, "comm");
+          return (
+            <CommentCard
+              key={comment.id}
+              id={comment.id}
+              content={comment.content}
+              userId={comment.user}
+              createdAt={comment.createdAt}
+              fetchComments={fetchComments}
+              handleReaction={handleReaction}
+            />
+          );
+        })}
+      </VStack>
     </Layout>
   );
 };
