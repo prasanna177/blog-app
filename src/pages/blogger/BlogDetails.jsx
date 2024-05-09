@@ -181,19 +181,36 @@ const BlogDetails = () => {
       const response = await axios.get(
         `https://localhost:7141/api/PostReactions/NonCommentReactions/${params.id}`
       );
-      const likedReactions = response.data.filter(
-        (reaction) =>
-          reaction.isPositive === true && reaction.isCommentReaction === false
+      const reactionsData = response.data;
+
+      const reactionsWithUserData = await Promise.all(
+        reactionsData.map(async (reaction) => {
+          // Fetch user data for each reaction
+          const userResponse = await axios.get(
+            `https://localhost:7141/api/Users/${reaction.user}`
+          );
+          const userData = userResponse.data;
+
+          // Replace user id with user name in reaction object
+          return {
+            ...reaction,
+            user: userData,
+            // Assuming name is the property for user's name
+          };
+        })
       );
-      const dislikedReactions = response.data.filter(
-        (reaction) =>
-          reaction.isPositive === false && reaction.isCommentReaction === false
+
+      const likedReactions = reactionsWithUserData.filter(
+        (reaction) => reaction.isPositive === true
+      );
+      const dislikedReactions = reactionsWithUserData.filter(
+        (reaction) => reaction.isPositive === false
       );
       setLikedReactions(likedReactions);
       setDislikedReactions(dislikedReactions);
-      setReactions(response.data);
-      if (response.data.length > 0) {
-        const userReaction = response.data.find(
+      setReactions(reactionsWithUserData);
+      if (reactionsData.length > 0) {
+        const userReaction = reactionsData.find(
           (reaction) => reaction.user === user.id
         );
         if (userReaction) {
@@ -212,6 +229,7 @@ const BlogDetails = () => {
       console.log("Error in fetching post reactions", error);
     }
   };
+
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   console.log(reactions, "reactions");

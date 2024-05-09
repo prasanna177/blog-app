@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Divider,
   HStack,
   Modal,
@@ -15,6 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
+import { createImageFromInitials } from "../../utils";
 
 const ReactionModal = ({
   isOpen,
@@ -39,8 +41,15 @@ const ReactionModal = ({
               <TabPanel>
                 {likedReactions?.map((reaction) => (
                   <React.Fragment key={reaction.id}>
-                    <HStack>
-                      <Text>{reaction.user}</Text>
+                    <HStack _hover={{cursor: "pointer", bg: 'gray.0'}}>
+                      <Avatar
+                        size={"sm"}
+                        src={
+                          reaction.user.profilePic ||
+                          createImageFromInitials(reaction.user.name)
+                        }
+                      ></Avatar>
+                      <Text>{reaction.user.name}</Text>
                       <Text>Liked</Text>
                     </HStack>
                     <Divider />
