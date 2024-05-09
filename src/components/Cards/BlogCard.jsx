@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import DeleteComment from "../Modals/DeleteComment";
 import { useSelector } from "react-redux";
+import { RepeatClockIcon } from "@chakra-ui/icons";
 
 const BlogCard = ({ title, body, onClick, isProfile, blogId, profileUser }) => {
   const navigate = useNavigate();
@@ -71,6 +72,15 @@ const BlogCard = ({ title, body, onClick, isProfile, blogId, profileUser }) => {
                 </Button>
               </Box>
             )}
+            <Box
+              _hover={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/blog/edit-history/${blogId}`);
+              }}
+            >
+              <RepeatClockIcon />
+            </Box>
           </HStack>
         </CardBody>
       </Card>

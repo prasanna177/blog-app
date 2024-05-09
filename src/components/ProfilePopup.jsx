@@ -20,8 +20,8 @@ const ProfilePopup = () => {
   //logout
   const handleLogout = () => {
     localStorage.clear();
+    window.location.reload();
     toast.success("Logged out successfully");
-    navigate("/login");
   };
 
   const handleChangePassword = () => {

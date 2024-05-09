@@ -13,7 +13,6 @@ import {
 import { getDateAndTime } from "../../utils";
 
 const CommentEditHistory = ({ isOpen, onClose, editHistory }) => {
-  console.log(editHistory, "edit");
   return (
     <Box>
       <Modal isOpen={isOpen} onClose={onClose}>

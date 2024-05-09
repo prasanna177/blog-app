@@ -1,3 +1,4 @@
+import EditHistory from "../pages/EditHistory";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import BlogDetails from "../pages/blogger/BlogDetails";
@@ -19,6 +20,10 @@ export const surferRoutes = [
   {
     path: "/create-blog",
     element: <CreateBlog />,
+  },
+  {
+    path: "/blog/edit-history/:id",
+    element: <EditHistory />,
   },
   {
     path: "/blog/:id",

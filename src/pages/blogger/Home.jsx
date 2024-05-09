@@ -77,6 +77,7 @@ const Home = () => {
               onClick={() => handleBlogClick(post.id)}
               title={post.title}
               body={post.body}
+              blogId={post.id}
             />
           ))}
         </VStack>
