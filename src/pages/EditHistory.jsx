@@ -41,7 +41,11 @@ const EditHistory = () => {
                   <VStack align={"stretch"}>
                     <Text variant={"heading1"}>Before edit</Text>
                     <Text>{item.oldTitle}</Text>
-                    <ImageComponent width={"400px"} src={item.oldImages} />
+                    <ImageComponent
+                      width={"400px"}
+                      height={"400px"}
+                      src={item.oldImages}
+                    />
                     <Text>{item.oldBody}</Text>
                   </VStack>
                 </GridItem>
@@ -49,7 +53,11 @@ const EditHistory = () => {
                   <VStack align={"stretch"}>
                     <Text variant={"heading1"}>After edit</Text>
                     <Text>{item.newTitle}</Text>
-                    <ImageComponent width={"400px"} src={item.newImages} />
+                    <ImageComponent
+                      width={"400px"}
+                      height={"400px"}
+                      src={item.newImages}
+                    />
                     <Text>{item.newBody}</Text>
                   </VStack>
                 </GridItem>
