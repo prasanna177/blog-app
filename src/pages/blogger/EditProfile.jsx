@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import ImageInput from "../../components/ImageInput";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TextField from "../../components/TextField";
 import { useForm } from "react-hook-form";
 import { Button } from "@chakra-ui/react";
@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 const EditProfile = () => {
   const { user } = useSelector((state) => state.user);
   const [profilePic, setProfilePic] = useState("");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const schema = yup.object({
     name: yup.string().required("Name address is required"),
@@ -31,7 +31,6 @@ const EditProfile = () => {
   });
 
   useEffect(() => {
-    // Set default values after getting tutor information
     setValue("name", user?.name || "");
     setValue("email", user?.email || "");
     setProfilePic(user?.profilePic || "");
@@ -45,17 +44,25 @@ const EditProfile = () => {
   const handleEditProfile = async (data) => {
     try {
       data.profilePic = profilePic;
-      const formData = new FormData();
-      formData.append("file", data.profilePic);
-      const filePathUrl = await axios.post(
-        `https://localhost:7141/api/FileUpload/upload`,
-        formData
-      );
-      data.profilePic = filePathUrl.data;
+      if (typeof data.profilePic === "object") {
+        const formData = new FormData();
+        formData.append("file", data.profilePic);
+        const filePathUrl = await axios.post(
+          `https://localhost:7141/api/FileUpload/upload`,
+          formData
+        );
+        data.profilePic = filePathUrl.data;
+      }
       const response = await axios.put(
         `https://localhost:7141/api/Users/${user?.id}`,
         data
       );
+      if (response.status === 200) {
+        toast.success("Edited profile successfully");
+        navigate(`/profile/${user.id}`);
+      } else {
+        toast.error("Failed to edit profile");
+      }
       console.log(response);
     } catch (error) {
       console.error(error);

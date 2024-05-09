@@ -67,6 +67,7 @@ const Profile = () => {
   useEffect(() => {
     getUser();
     getUserBlogs();
+    //eslint-disable-next-line
   }, []);
 
   return (

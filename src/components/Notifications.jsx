@@ -31,6 +31,7 @@ const Notifications = () => {
 
   useEffect(() => {
     fetchNotificaitons();
+    //eslint-disable-next-line
   }, []);
 
   return (
