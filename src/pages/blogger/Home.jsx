@@ -12,9 +12,6 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [sortBy, setSortBy] = useState("Random");
 
-  console.log(sortBy, "sb");
-  console.log(posts, "homeposts");
-
   const fetchPosts = async () => {
     try {
       let response;
@@ -31,7 +28,6 @@ const Home = () => {
           "https://localhost:7141/api/Posts/SortByPopularity"
         );
       }
-      console.log(response, "after");
       setPosts(response.data);
     } catch (error) {
       console.error("Error fetching posts:", error);

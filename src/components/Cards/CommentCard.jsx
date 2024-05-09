@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CardBody,
@@ -20,6 +21,8 @@ import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
 import DeleteComment from "../Modals/DeleteComment";
 import ReactionModal from "../Modals/ReactionModal";
+import { RepeatClockIcon } from "@chakra-ui/icons";
+import CommentEditHistory from "../Modals/CommentEditHistory";
 
 const CommentCard = ({
   id,
@@ -39,6 +42,8 @@ const CommentCard = ({
   const [dislikedReactions, setDislikedReactions] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
+  const [editHistory, setEditHistory] = useState([]);
+
   // const [allReactions, setAllReactions] = useState([]);
 
   const navigate = useNavigate();
@@ -85,6 +90,17 @@ const CommentCard = ({
     setIsEditMode(true);
   };
 
+  const fetchEditHistory = async (commentId) => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7141/api/Comments/commentEditLogs/${commentId}`
+      );
+      setEditHistory(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleReaction = async (isPositive, id) => {
     try {
       if (!localStorage.getItem("token")) {
@@ -94,7 +110,7 @@ const CommentCard = ({
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user: user.id,
+          user: user?.id,
           postId: params.id,
           commentId: id,
           isCommentReaction: true,
@@ -126,7 +142,7 @@ const CommentCard = ({
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
-          (reaction) => reaction.user === user.id
+          (reaction) => reaction.user === user?.id
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
@@ -144,6 +160,8 @@ const CommentCard = ({
       console.log("Error in fetching post reactions", error);
     }
   };
+  console.log(editHistory, "edit");
+
   const handleInputEdit = async (e) => {
     if (e.key === "Escape") {
       setCommentValue(content);
@@ -153,7 +171,7 @@ const CommentCard = ({
       try {
         const submissionData = {
           content: commentValue,
-          user: user.id,
+          user: user?.id,
           createdAt: new Date(),
           postId: params.id,
         };
@@ -183,7 +201,7 @@ const CommentCard = ({
     try {
       const submissionData = {
         content: commentValue,
-        user: user.id,
+        user: user?.id,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -241,13 +259,22 @@ const CommentCard = ({
     }
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isReactionOpen,
+    onOpen: onReactionOpen,
+    onClose: onReactionClose,
+  } = useDisclosure();
+  const {
+    isOpen: isHistoryOpen,
+    onOpen: onHistoryOpen,
+    onClose: onHistoryClose,
+  } = useDisclosure();
 
   return (
     <Card>
       <ReactionModal
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isReactionOpen}
+        onClose={onReactionClose}
         likedReactions={likedReactions}
         dislikedReactions={dislikedReactions}
       />
@@ -257,79 +284,99 @@ const CommentCard = ({
         isOpen={isDeleteOpen}
         handleDelete={handleDelete}
       />
+      <CommentEditHistory
+        onClose={onHistoryClose}
+        isOpen={isHistoryOpen}
+        editHistory={editHistory}
+      />
       <CardBody bg={"gray.100"}>
-        <Text>User:{userId}</Text>
-        <Text>Date: {getDateAndTime(createdAt)}</Text>
-        {isEditMode ? (
-          <VStack align={"stretch"}>
-            <Input
-              value={commentValue}
-              onChange={(e) => setCommentValue(e.target.value)}
-              ref={inputRef}
-              onKeyDown={handleInputEdit}
-            />
-            <Text variant={"subtitle1"}>
-              Press escape to cancel and enter to save
-            </Text>
-          </VStack>
-        ) : (
-          <Text>Comment: {content}</Text>
-        )}
-        {console.log(userId, user.id, "aaaa")}
-        {user.id === userId && !isEditMode && (
-          <>
-            <Button
-              bg={"warning.200"}
-              color={"white"}
-              onClick={handleEditClick}
-            >
-              Edit
-            </Button>
-            <Button
-              bg={"error.100"}
-              color={"white"}
-              onClick={() => onDeleteOpen()}
-            >
-              Delete
-            </Button>
-          </>
-        )}
-        <HStack>
-          {isLiked ? (
-            <FaThumbsUp
-              color="blue"
-              onClick={() => {
-                console.log("removed liked");
-                handleReaction(true, id);
-              }}
-            />
-          ) : (
-            <FaRegThumbsUp
-              color="blue"
-              onClick={() => {
-                handleReaction(true, id);
-              }}
-            />
-          )}
-          {isDisliked ? (
-            <FaThumbsDown
-              color="blue"
-              onClick={() => {
-                console.log("removed dislike");
-                handleReaction(false, id);
-              }}
-            />
-          ) : (
-            <FaRegThumbsDown
-              color="blue"
-              onClick={() => {
-                handleReaction(false, id);
-              }}
-            />
-          )}
-          <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
-            {totalReactions}
-          </Text>
+        <HStack justifyContent={"space-between"}>
+          <Box>
+            <Text>User:{userId}</Text>
+            <Text>Date: {getDateAndTime(createdAt)}</Text>
+            {isEditMode ? (
+              <VStack align={"stretch"}>
+                <Input
+                  value={commentValue}
+                  onChange={(e) => setCommentValue(e.target.value)}
+                  ref={inputRef}
+                  onKeyDown={handleInputEdit}
+                />
+                <Text variant={"subtitle1"}>
+                  Press escape to cancel and enter to save
+                </Text>
+              </VStack>
+            ) : (
+              <Text>Comment: {content}</Text>
+            )}
+            {user?.id === userId && !isEditMode && (
+              <>
+                <Button
+                  bg={"warning.200"}
+                  color={"white"}
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </Button>
+                <Button
+                  bg={"error.100"}
+                  color={"white"}
+                  onClick={() => onDeleteOpen()}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+            <HStack>
+              {isLiked ? (
+                <FaThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    console.log("removed liked");
+                    handleReaction(true, id);
+                  }}
+                />
+              ) : (
+                <FaRegThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(true, id);
+                  }}
+                />
+              )}
+              {isDisliked ? (
+                <FaThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    console.log("removed dislike");
+                    handleReaction(false, id);
+                  }}
+                />
+              ) : (
+                <FaRegThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, id);
+                  }}
+                />
+              )}
+              <Text
+                _hover={{ cursor: "pointer" }}
+                onClick={() => onReactionOpen()}
+              >
+                {totalReactions}
+              </Text>
+            </HStack>
+          </Box>
+          <Box
+            _hover={{ cursor: "pointer" }}
+            onClick={() => {
+              onHistoryOpen();
+              fetchEditHistory(id);
+            }}
+          >
+            <RepeatClockIcon />
+          </Box>
         </HStack>
       </CardBody>
     </Card>
