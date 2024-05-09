@@ -4,8 +4,8 @@ import {
   Card,
   CardBody,
   HStack,
-  Input,
   Text,
+  Textarea,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -296,7 +296,7 @@ const CommentCard = ({
             <Text>Date: {getDateAndTime(createdAt)}</Text>
             {isEditMode ? (
               <VStack align={"stretch"}>
-                <Input
+                <Textarea
                   value={commentValue}
                   onChange={(e) => setCommentValue(e.target.value)}
                   ref={inputRef}
