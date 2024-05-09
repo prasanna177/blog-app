@@ -12,7 +12,7 @@ import { getDateAndTime } from "../../utils";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaRegThumbsUp } from "react-icons/fa";
 import { FaThumbsUp } from "react-icons/fa";
@@ -40,6 +40,8 @@ const CommentCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   // const [allReactions, setAllReactions] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchReactions();
@@ -85,6 +87,9 @@ const CommentCard = ({
 
   const handleReaction = async (isPositive, id) => {
     try {
+      if (!localStorage.getItem("token")) {
+        return navigate("/login");
+      }
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {

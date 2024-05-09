@@ -2,6 +2,7 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import BlogDetails from "../pages/blogger/BlogDetails";
 import CreateBlog from "../pages/blogger/CreateBlog";
+import Home from "../pages/blogger/Home";
 
 export const authenticationRoutes = [
   {
@@ -22,6 +23,9 @@ export const surferRoutes = [
   {
     path: "/blog/:id",
     element: <BlogDetails />,
-    availability: ["user"],
+  },
+  {
+    path: "/",
+    element: <Home />,
   },
 ];

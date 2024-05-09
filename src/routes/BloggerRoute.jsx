@@ -1,15 +1,10 @@
 import ChangePassword from "../pages/ChangePassword";
 import EditBlog from "../pages/blogger/EditBlog";
 import EditProfile from "../pages/blogger/EditProfile";
-import Home from "../pages/blogger/Home";
 import Profile from "../pages/blogger/Profile";
 
 export const bloggerRoutes = [
-  {
-    path: "/",
-    element: <Home />,
-    availability: ["user"],
-  },
+
   {
     path: "/profile/:id",
     element: <Profile />,

@@ -83,6 +83,9 @@ const BlogDetails = () => {
 
   const handleReaction = async (isCommentReaction, isPositive, id) => {
     try {
+      if (!localStorage.getItem("token")) {
+        return navigate("/login");
+      }
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
@@ -229,7 +232,6 @@ const BlogDetails = () => {
       console.log("Error in fetching post reactions", error);
     }
   };
-
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   console.log(reactions, "reactions");
