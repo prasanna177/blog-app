@@ -1,6 +1,16 @@
-import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+} from "@chakra-ui/react";
 
-const DeleteComment = ({isOpen, onClose, handleDelete}) => {
+const DeleteComment = ({ isOpen, onClose, handleDelete, body }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -8,9 +18,7 @@ const DeleteComment = ({isOpen, onClose, handleDelete}) => {
         <ModalHeader>Are you sure?</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text variant={"subtitle1"}>
-            This action will delete this comment.
-          </Text>
+          <Text variant={"subtitle1"}>{body}</Text>
         </ModalBody>
 
         <ModalFooter>

@@ -23,12 +23,15 @@ import ImageInput from "../../components/ImageInput";
 import BlogCard from "../../components/Cards/BlogCard";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const CreateBlog = () => {
+  const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [blogImage, setBlogImage] = useState("");
   const [posts, setPosts] = useState(null);
+  console.log(posts);
 
   const handleImageChange = (e, setImage) => {
     setImage(e.target.files[0]);
@@ -61,6 +64,7 @@ const CreateBlog = () => {
         formData
       );
       data.images = filePathUrl.data;
+      data.author = user?.id;
       data.createdAt = new Date();
       const response = await axios.post(
         "https://localhost:7141/api/Posts",

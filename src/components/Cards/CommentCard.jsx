@@ -21,6 +21,7 @@ import { FaThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
 import DeleteComment from "../Modals/DeleteComment";
+import ReactionModal from "../Modals/ReactionModal";
 
 const CommentCard = ({
   id,
@@ -35,23 +36,42 @@ const CommentCard = ({
   const inputRef = useRef(null);
   const params = useParams();
   const [reactions, setReactions] = useState([]);
-  // const [likedReactions, setLikedReactions] = useState(null);
-  //const [dislikedReactions, setDislikedReactions] = useState;
+  const [totalReactions, setTotalReactions] = useState(0);
+  const [likedReactions, setLikedReactions] = useState(null);
+  const [dislikedReactions, setDislikedReactions] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
-  const [allReactions, setAllReactions] = useState([]);
+  // const [allReactions, setAllReactions] = useState([]);
 
   useEffect(() => {
     fetchReactions();
     //eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    calculateTotalReactions();
+    //eslint-disable-next-line
+  }, [reactions]);
+
+  const calculateTotalReactions = () => {
+    let total = 0;
+
+    reactions.forEach((reaction) => {
+      if (reaction.isPositive) {
+        total++;
+      } else {
+        total--;
+      }
+    });
+
+    setTotalReactions(total);
+  };
+
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
-  // const { isOpen: isReactionOpen, onOpen: onReactionOpen, onClose: onReactionClose } = useDisclosure();
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
@@ -67,15 +87,11 @@ const CommentCard = ({
 
   const handleReaction = async (isPositive, id) => {
     try {
-      const existingReaction = reactions?.find(
-        (reaction) =>
-          reaction.user === user.userId && reaction.postId === Number(id)
-      );
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user: user.userId,
+          user: user.id,
           postId: params.id,
           commentId: id,
           isCommentReaction: true,
@@ -102,12 +118,12 @@ const CommentCard = ({
         (reaction) =>
           reaction.isPositive === false && reaction.isCommentReaction === false
       );
-      //  setLikedReactions(likedReactions);
-      //   setDislikedReactions(dislikedReactions);
+      setLikedReactions(likedReactions);
+      setDislikedReactions(dislikedReactions);
       setReactions(response.data);
       if (response.data.length > 0) {
         const userReaction = response.data.find(
-          (reaction) => reaction.user === user.userId
+          (reaction) => reaction.user === user.id
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
@@ -134,7 +150,7 @@ const CommentCard = ({
       try {
         const submissionData = {
           content: commentValue,
-          user: user.userId,
+          user: user.id,
           createdAt: new Date(),
           postId: params.id,
         };
@@ -160,35 +176,11 @@ const CommentCard = ({
     }
   };
 
-  // const handleDeleteReaction = async () => {
-  //   try {
-  //     const reaction = allReactions.find(
-  //       (reaction) => reaction.user === user.userId && reaction.postId === id
-  //     );
-  //     console.log(id);
-  //     console.log(reaction, "deletedReaction");
-  //     const reactionId = reaction?.id;
-  //     console.log(reactionId, "rx");
-  //     const response = await axios.delete(
-  //       `https://localhost:7141/api/PostReactions/${reactionId}`
-  //     );
-  //     console.log(response, "reactionRes");
-  //     if (response.status === 204) {
-  //       setIsLiked(false);
-  //       setIsDisliked(false);
-  //       fetchReactions();
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error(error.response.data.message || "Something went wrong");
-  //   }
-  // };
-
   const handleDelete = async () => {
     try {
       const submissionData = {
         content: commentValue,
-        user: user.userId,
+        user: user.id,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -222,7 +214,7 @@ const CommentCard = ({
       const response = await axios.get(
         `https://localhost:7141/api/PostReactions/CommentReactions/${id}`
       );
-      setAllReactions(response.data);
+      // setAllReactions(response.data);
       if (response.data.length > 0) {
         const userReactions = response.data.filter(
           (reaction) => reaction.user === user.userId
@@ -245,7 +237,8 @@ const CommentCard = ({
       console.log("Error in fetching post reactions", error);
     }
   };
-  console.log(allReactions, "allReactions");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Card
@@ -254,7 +247,14 @@ const CommentCard = ({
         width: "auto",
       }}
     >
+      <ReactionModal
+        isOpen={isOpen}
+        onClose={onClose}
+        likedReactions={likedReactions}
+        dislikedReactions={dislikedReactions}
+      />
       <DeleteComment
+        body={"This action will delete this comment."}
         onClose={onDeleteClose}
         isOpen={isDeleteOpen}
         handleDelete={handleDelete}
@@ -277,7 +277,7 @@ const CommentCard = ({
             </Text>
           </VStack>
         ) : (
-          <Text style={{ fontSize: "15px" }}> {content}</Text>
+          <Text>Comment: {content}</Text>
         )}
 
         <HStack>
@@ -313,19 +313,28 @@ const CommentCard = ({
               }}
             />
           )}
-          <Text>2</Text>
-          {user.userId === userId && !isEditMode && (
-            <div style={{ marginLeft: "30px" }}>
+          <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
+            {totalReactions}
+          </Text>
+
+          {user.id === userId && !isEditMode && (
+            <div style={{ marginLeft: "20px" }}>
               <Button
                 onClick={handleEditClick}
+                color={"warning.200"}
+                variant="ghost"
                 leftIcon={<FaEdit />}
-                bg="white"
-              ></Button>
+              >
+                Edit
+              </Button>
               <Button
                 onClick={() => onDeleteOpen()}
+                color={"error.100"}
+                variant="ghost"
                 leftIcon={<FaTrash />}
-                bg="white"
-              ></Button>
+              >
+                Delete
+              </Button>
             </div>
           )}
         </HStack>

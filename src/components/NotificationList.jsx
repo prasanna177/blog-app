@@ -12,25 +12,30 @@ const NotificationList = ({ notification }) => {
   return (
     <>
       {!notification?.length && "No new notifications"}
-      {notification?.map((item, index) => (
-        <Box key={index}>
-          <MenuItem
-            onClick={() => handleNotificationClick(item)}
-            _hover={{ bgColor: "gray.0" }}
-          >
-            <VStack alignItems={"start"}>
-              <Box fontSize={"md"} fontWeight={"bold"}>
-                {item.content}
-              </Box>
-              <HStack fontSize={"sm"} color={"gray.100"}>
-                <i className="fa-regular fa-clock"></i>
-                <Text>{item.date && getDateAndTime(item.date)}</Text>
-              </HStack>
-            </VStack>
-          </MenuItem>
-          <Divider borderWidth={"1px"} />
-        </Box>
-      ))}
+      {notification?.map((item, index) => {
+        console.log(item, "item");
+        return (
+          <Box key={index}>
+            <MenuItem
+              onClick={() => handleNotificationClick(item)}
+              _hover={{ bgColor: "gray.0" }}
+            >
+              <VStack alignItems={"start"}>
+                <Box fontSize={"md"} fontWeight={"bold"}>
+                  {item.content}
+                </Box>
+                <HStack fontSize={"sm"} color={"gray.100"}>
+                  <i className="fa-regular fa-clock"></i>
+                  <Text>
+                    {item.createdAt && getDateAndTime(item.createdAt)}
+                  </Text>
+                </HStack>
+              </VStack>
+            </MenuItem>
+            <Divider borderWidth={"1px"} />
+          </Box>
+        );
+      })}
     </>
   );
 };

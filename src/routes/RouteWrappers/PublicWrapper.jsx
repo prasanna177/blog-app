@@ -1,6 +1,8 @@
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/features/userSlice";
+import { useEffect } from "react";
+import axios from "axios";
 
 const PublicWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -8,26 +10,25 @@ const PublicWrapper = ({ children }) => {
   const decodedToken =
     localStorage.getItem("token") && jwtDecode(localStorage.getItem("token"));
 
+  let userId;
   if (localStorage.getItem("token")) {
-    const userId = Number(
+    userId =
       decodedToken[
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ]
-    );
-    const role =
-      decodedToken[
-        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
       ];
-    const email =
-      decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-      ];
-    const name =
-      decodedToken[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-      ];
-    dispatch(setUser({ userId, role, email, name }));
   }
+  const getUser = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7141/api/Users/${userId}`);
+      dispatch(setUser(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getUser();
+    //eslint-disable-next-line
+  }, []);
   return children;
 };
 

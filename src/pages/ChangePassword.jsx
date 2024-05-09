@@ -35,7 +35,7 @@ const ChangePassword = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_PORT}/api/auth/change-password`,
-        { ...data, userId: user.userId },
+        { ...data, userId: user.id },
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),

@@ -1,11 +1,56 @@
-import { Card, CardBody, Text, Image, Box } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  HStack,
+  Text,
+  Image,
+  useDisclosure,
+} from "@chakra-ui/react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import DeleteComment from "../Modals/DeleteComment";
+import { useSelector } from "react-redux";
 
-const BlogCard = ({ title, body, date, image, onClick }) => {
+const BlogCard = ({
+  title,
+  body,
+  date,
+  image,
+  onClick,
+  isProfile,
+  blogId,
+  profileUser,
+}) => {
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleDeleteBlog = async () => {
+    try {
+      const response = await axios.delete(
+        `https://localhost:7141/api/Posts/${blogId}`
+      );
+      console.log(response, "deleteRes");
+      if (response.status === 204) {
+        toast.success("Your blog has been deleted.");
+        window.location.reload();
+      } else {
+        toast.error("Failed to delete blog");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message || "Something went wrong");
+    }
+  };
   return (
     <Card
       style={{
         width: "100%",
-        maxWidth: "300px",
+        maxWidth: "290px",
         background: "#DADCE7",
       }}
       onClick={onClick}
@@ -19,7 +64,7 @@ const BlogCard = ({ title, body, date, image, onClick }) => {
           {date}
         </Text>
         {image && (
-          <Box mb={4} style={{ width: "260px", height: "200px" }}>
+          <Box mb={4} style={{ width: "250px", height: "200px" }}>
             <Image
               style={{
                 width: "100%",

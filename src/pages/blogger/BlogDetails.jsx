@@ -22,6 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import TextareaField from "../../components/TextareaField";
+import BlogCard from "../../components/Cards/BlogCard";
 import { getDateAndTime } from "../../utils";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -61,6 +62,7 @@ const BlogDetails = () => {
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
+  const [userBlogs, setUserBlogs] = useState(null);
 
   const [totalReactions, setTotalReactions] = useState(0);
   const [likedReactions, setLikedReactions] = useState(null);
@@ -96,16 +98,11 @@ const BlogDetails = () => {
 
   const handleReaction = async (isCommentReaction, isPositive, id) => {
     try {
-      const existingReaction = reactions?.find(
-        (reaction) =>
-          reaction.user === user.userId && reaction.postId === Number(id)
-      );
-
       const response = await axios.post(
         "https://localhost:7141/api/PostReactions",
         {
           isPositive,
-          user: user.userId,
+          user: user.id,
           postId: id,
           isCommentReaction,
           createdAt: new Date(),
@@ -149,7 +146,7 @@ const BlogDetails = () => {
       }
       const submissionData = {
         ...data,
-        user: user.userId,
+        user: user.id,
         createdAt: new Date(),
         postId: params.id,
       };
@@ -196,25 +193,53 @@ const BlogDetails = () => {
     }
   };
 
+  const getUserBlogs = async () => {
+    try {
+      const res = await axios.get(
+        `https://localhost:7141/api/Posts/ByAuthor/${params.id}`
+      );
+      setUserBlogs(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const fetchPostReactions = async () => {
     try {
       const response = await axios.get(
         `https://localhost:7141/api/PostReactions/NonCommentReactions/${params.id}`
       );
-      const likedReactions = response.data.filter(
-        (reaction) =>
-          reaction.isPositive === true && reaction.isCommentReaction === false
+      const reactionsData = response.data;
+
+      const reactionsWithUserData = await Promise.all(
+        reactionsData.map(async (reaction) => {
+          // Fetch user data for each reaction
+          const userResponse = await axios.get(
+            `https://localhost:7141/api/Users/${reaction.user}`
+          );
+          const userData = userResponse.data;
+
+          // Replace user id with user name in reaction object
+          return {
+            ...reaction,
+            user: userData,
+            // Assuming name is the property for user's name
+          };
+        })
       );
-      const dislikedReactions = response.data.filter(
-        (reaction) =>
-          reaction.isPositive === false && reaction.isCommentReaction === false
+
+      const likedReactions = reactionsWithUserData.filter(
+        (reaction) => reaction.isPositive === true
+      );
+      const dislikedReactions = reactionsWithUserData.filter(
+        (reaction) => reaction.isPositive === false
       );
       setLikedReactions(likedReactions);
       setDislikedReactions(dislikedReactions);
-      setReactions(response.data);
-      if (response.data.length > 0) {
-        const userReaction = response.data.find(
-          (reaction) => reaction.user === user.userId
+      setReactions(reactionsWithUserData);
+      if (reactionsData.length > 0) {
+        const userReaction = reactionsData.find(
+          (reaction) => reaction.user === user.id
         );
         if (userReaction) {
           setIsLiked(userReaction.isPositive);
@@ -232,70 +257,83 @@ const BlogDetails = () => {
       console.log("Error in fetching post reactions", error);
     }
   };
+  useEffect(() => {
+    // getUser();
+    getUserBlogs();
+    //eslint-disable-next-line
+  }, []);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log(reactions, "reactions");
+  console.log(userBlogs, "------------------------");
 
   return (
-    <Layout>
-      <ReactionModal
-        isOpen={isOpen}
-        onClose={onClose}
-        likedReactions={likedReactions}
-        dislikedReactions={dislikedReactions}
-      />
-      <HStack>
-        {isLiked ? (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaThumbsUp
-              color="blue"
-              onClick={() => {
-                handleReaction(false, true, params.id); //isCommentReaction, isPositive, id
-              }}
-            />
-          </Box>
-        ) : (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaRegThumbsUp
-              color="blue"
-              onClick={() => {
-                handleReaction(false, true, params.id);
-                console.log("liked");
-              }}
-            />
-          </Box>
-        )}
-        {isDisliked ? (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaThumbsDown
-              color="blue"
-              onClick={() => {
-                handleReaction(false, false, params.id);
-              }}
-            />
-          </Box>
-        ) : (
-          <Box _hover={{ cursor: "pointer" }}>
-            <FaRegThumbsDown
-              color="blue"
-              onClick={() => {
-                handleReaction(false, false, params.id);
-              }}
-            />
-          </Box>
-        )}
-        <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
-          {totalReactions}
-        </Text>
-        {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
+    <Layout title={"Blog Details"}>
+      <div style={{ display: "flex" }}>
+        <div>
+          <ReactionModal
+            isOpen={isOpen}
+            onClose={onClose}
+            likedReactions={likedReactions}
+            dislikedReactions={dislikedReactions}
+          />
+          <HStack>
+            {isLiked ? (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, true, params.id); //isCommentReaction, isPositive, id
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaRegThumbsUp
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, true, params.id);
+                    console.log("liked");
+                  }}
+                />
+              </Box>
+            )}
+            {isDisliked ? (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, false, params.id);
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box _hover={{ cursor: "pointer" }}>
+                <FaRegThumbsDown
+                  color="blue"
+                  onClick={() => {
+                    handleReaction(false, false, params.id);
+                  }}
+                />
+              </Box>
+            )}
+            <Text _hover={{ cursor: "pointer" }} onClick={() => onOpen()}>
+              {totalReactions}
+            </Text>
+            {/* <Tooltip tooltipId={'total-reaction'} label={'View reactions'}>
         </Tooltip> */}
-      </HStack>
-      <Text>{posts.title}</Text>
-      <Text style={{ fontSize: "10px" }}>
-        {getDateAndTime(posts.createdAt)}
-      </Text>
-      <ImageComponent width={"400px"} src={posts.images} />
-      <Text>{posts.body}</Text>
+          </HStack>
+          <Text style={{ marginTop: "10px" }}>{posts.title}</Text>
+          <Text style={{ fontSize: "10px" }}>
+            {getDateAndTime(posts.createdAt)}
+          </Text>
+          <ImageComponent
+            style={{ marginTop: "10px" }}
+            width={"400px"}
+            src={posts.images}
+          />
+          <Text style={{ marginTop: "10px" }}>{posts.body}</Text>
+        </div>
+      </div>
       <form onSubmit={handleSubmit(handleComment)}>
         <Button
           onClick={openModal}
@@ -348,6 +386,38 @@ const BlogDetails = () => {
           );
         })}
       </VStack>
+
+      <div
+        style={{
+          marginTop: "30px",
+        }}
+      >
+        <VStack alignItems={"stretch"}>
+          <Text>Users blogs</Text>
+          <VStack
+            alignItems="stretch"
+            spacing={4}
+            className="blog-grid"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
+            {" "}
+            {userBlogs?.map((post) => (
+              <BlogCard
+                key={post.id}
+                onClick={() => handleBlogClick(post.id)}
+                title={post.title}
+                body={post.body}
+                date={new Date(post.createdAt).toLocaleDateString()}
+                image={post.images}
+              />
+            ))}
+          </VStack>
+        </VStack>
+      </div>
     </Layout>
   );
 };

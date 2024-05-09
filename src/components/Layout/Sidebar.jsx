@@ -28,7 +28,7 @@ const Sidebar = () => {
     },
     {
       name: "Profile",
-      path: `/profile/${user.userId}`,
+      path: `/profile/${user?.id}`,
       icon: "fa-solid fa-user",
     },
     {
@@ -42,7 +42,7 @@ const Sidebar = () => {
       ? AdminMenu
       : user?.role === "user"
       ? BloggerMenu
-      : false;
+      : [];
 
   return (
     <Box
