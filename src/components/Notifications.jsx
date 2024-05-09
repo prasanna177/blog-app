@@ -66,7 +66,10 @@ const Notifications = () => {
       );
       if (response.status === 200) {
         toast.success("Seen notifications deleted successfully");
-        fetchNotificaitons();
+        const updatedSeenNotifications = seenNotifications.filter(
+          (notification) => !notification.isRead
+        );
+        setSeenNotifications(updatedSeenNotifications);
       } else {
         toast.error("Failed to delete notificaiton");
       }
