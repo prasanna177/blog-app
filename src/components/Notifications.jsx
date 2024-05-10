@@ -153,6 +153,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import NotificationList from "./NotificationList";
 import SignalRService from "./SignalRService";
+import toast from "react-hot-toast";
 
 const Notifications = () => {
   const { user } = useSelector((state) => state.user);
@@ -185,6 +186,7 @@ const[currentNot, setCurrentNot] = useState("");
   const handleNotification = (notification) => {
     setCurrentNot(notification)
     console.log(notification,"signalNot")
+toast.message(notification?.content)
    setNotifications((prevNotifications) => [...prevNotifications, notification]);
   };
 
