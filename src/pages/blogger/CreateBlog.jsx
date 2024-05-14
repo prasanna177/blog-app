@@ -1,16 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import TextField from "../../components/TextField";
-import { Button, Text, VStack } from "@chakra-ui/react";
-import ImageInput from "../../components/ImageInput";
+import { Button, VStack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import TextareaField from "../../components/TextareaField";
-import toast from "react-hot-toast";
-import BlogCard from "../../components/Cards/BlogCard";
-import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
+import TextField from "../../components/TextField";
+import TextareaField from "../../components/TextareaField";
+import ImageInput from "../../components/ImageInput";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const CreateBlog = () => {
@@ -22,10 +21,6 @@ const CreateBlog = () => {
 
   const handleImageChange = (e, setImage) => {
     setImage(e.target.files[0]);
-  };
-
-  const handleBlogClick = (id) => {
-    navigate(`/blog/${id}`);
   };
 
   const schema = yup.object({
@@ -40,10 +35,10 @@ const CreateBlog = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
   const handlePostSubmit = async (data) => {
     try {
       data.images = blogImage;
-      console.log(data);
       const formData = new FormData();
       formData.append("file", data.images);
       const filePathUrl = await axios.post(
@@ -53,20 +48,19 @@ const CreateBlog = () => {
       data.images = filePathUrl.data;
       data.author = user?.id;
       data.createdAt = new Date();
-      console.log(data, "data");
       const response = await axios.post(
         "https://localhost:7141/api/Posts",
         data
       );
       if (response.status === 201) {
         toast.success("Post created successfully.");
-        fetchPosts();
+        navigate("/");
       } else {
         toast.error("Failed to create post");
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response.data.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -76,9 +70,7 @@ const CreateBlog = () => {
 
   const fetchPosts = async () => {
     try {
-      console.log("before");
       const response = await axios.get("https://localhost:7141/api/Posts");
-      console.log(response, "after");
       if (response.status === 200) {
         setPosts(response.data);
       }
@@ -86,44 +78,41 @@ const CreateBlog = () => {
       console.error("Error fetching posts:", error);
     }
   };
-  console.log(posts, "posts");
 
   return (
-    <Layout>
-      <h2>CREATE POST FORM</h2>
+    <Layout title={"Create blog"}>
       <form onSubmit={handleSubmit(handlePostSubmit)}>
-        <TextField
-          name={"title"}
-          placeholder={"title"}
-          register={register}
-          errors={errors?.title?.message}
-        />
-        <TextareaField
-          name={"body"}
-          placeholder={"body"}
-          register={register}
-          errors={errors?.body?.message}
-        />
-        <ImageInput
-          width={"200px"}
-          height={"200px"}
-          image={blogImage}
-          handleImageChange={(e) => handleImageChange(e, setBlogImage)}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-
-      <Text>Blogs</Text>
-      <VStack alignItems={"stretch"}>
-        {posts?.map((post) => (
-          <BlogCard
-            key={post.id}
-            onClick={() => handleBlogClick(post.id)}
-            title={post.title}
-            body={post.body}
+        <VStack spacing={4} w={"500px"}>
+          <TextField
+            label={"Blog title"}
+            name={"title"}
+            placeholder={"Title"}
+            register={register}
+            errors={errors?.title?.message}
           />
-        ))}
-      </VStack>
+          <TextareaField
+          label={"Blog content"}
+            name={"body"}
+            placeholder={"Body"}
+            register={register}
+            errors={errors?.body?.message}
+          />
+          <ImageInput
+            width={"200px"}
+            height={"200px"}
+            image={blogImage}
+            handleImageChange={(e) => handleImageChange(e, setBlogImage)}
+          />
+          <Button
+            w={"100%"}
+            onClick={handleSubmit(handlePostSubmit)}
+            colorScheme="blue"
+            style={{ backgroundColor: "#5b3b8c", color: "white" }}
+          >
+            Submit
+          </Button>
+        </VStack>
+      </form>
     </Layout>
   );
 };

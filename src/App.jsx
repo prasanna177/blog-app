@@ -1,4 +1,3 @@
-
 import { ChakraProvider } from "@chakra-ui/react";
 import { theme } from "./theme";
 import AppRoute from "./routes/AppRoute";

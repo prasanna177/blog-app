@@ -1,4 +1,6 @@
 import {
+  Avatar,
+  Box,
   Divider,
   HStack,
   Modal,
@@ -13,8 +15,10 @@ import {
   TabPanels,
   Tabs,
   Text,
+  VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import { createImageFromInitials } from "../../utils";
+import { useNavigate } from "react-router-dom";
 
 const ReactionModal = ({
   isOpen,
@@ -22,6 +26,7 @@ const ReactionModal = ({
   likedReactions,
   dislikedReactions,
 }) => {
+  const navigate = useNavigate();
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -31,28 +36,53 @@ const ReactionModal = ({
         <ModalBody>
           <Tabs>
             <TabList>
-              <Tab>Likes</Tab>
-              <Tab>Dislikes</Tab>
+              <Tab>Likes ({likedReactions?.length})</Tab>
+              <Tab>Dislikes ({dislikedReactions?.length})</Tab>
             </TabList>
 
             <TabPanels>
               <TabPanel>
-                {likedReactions?.map((reaction) => (
-                  <React.Fragment key={reaction.id}>
-                    <HStack>
-                      <Text>{reaction.user}</Text>
-                      <Text>Liked</Text>
-                    </HStack>
-                    <Divider />
-                  </React.Fragment>
-                ))}
+                <VStack alignItems={"stretch"}>
+                  {likedReactions?.map((reaction) => (
+                    <Box key={reaction.id}>
+                      <HStack
+                        onClick={() => navigate(`/profile/${reaction.user.id}`)}
+                        _hover={{ cursor: "pointer", bg: "gray.0" }}
+                      >
+                        <Avatar
+                          size={"sm"}
+                          src={
+                            reaction.user.profilePic ||
+                            createImageFromInitials(reaction.user.name)
+                          }
+                        ></Avatar>
+                        <Text>{reaction.user.name}</Text>
+                        <Text>Liked</Text>
+                      </HStack>
+                      <Divider />
+                    </Box>
+                  ))}
+                </VStack>
               </TabPanel>
               <TabPanel>
                 {dislikedReactions?.map((reaction) => (
-                  <HStack key={reaction.id}>
-                    <Text>{reaction.user}</Text>
-                    <Text>Disliked</Text>
-                  </HStack>
+                  <Box mb={5} key={reaction.id}>
+                    <HStack
+                      onClick={() => navigate(`/profile/${reaction.user.id}`)}
+                      _hover={{ cursor: "pointer", bg: "gray.0" }}
+                    >
+                      <Avatar
+                        size={"sm"}
+                        src={
+                          reaction.user.profilePic ||
+                          createImageFromInitials(reaction.user.name)
+                        }
+                      ></Avatar>
+                      <Text>{reaction.user.name}</Text>
+                      <Text>Disliked</Text>
+                    </HStack>
+                    <Divider />
+                  </Box>
                 ))}
               </TabPanel>
             </TabPanels>

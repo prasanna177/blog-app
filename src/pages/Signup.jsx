@@ -1,19 +1,26 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Box, Heading, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
 import TextField from "../components/TextField";
 import Password from "../components/Password";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Signup = () => {
   const navigate = useNavigate();
   const schema = yup.object({
-    name: yup.string().required("Name address is required"),
-    email: yup.string().required("Email address is required"),
-    password: yup.string().required("Password is required"),
+    name: yup.string().required("Name is required"),
+    email: yup
+      .string()
+      .required("Email address is required")
+      .email("Invalid email address"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters"),
   });
 
   const {
@@ -49,38 +56,59 @@ const Signup = () => {
   };
 
   return (
-    <>
-      <h2>SIGNUP FORM</h2>
-
-      <form onSubmit={handleSubmit(handleSignupSubmit)}>
-        <TextField
-          name={"name"}
-          register={register}
-          errors={errors?.name?.message}
-          placeholder={"Name"}
-        />
-        <TextField
-          name={"email"}
-          register={register}
-          errors={errors?.email?.message}
-          placeholder={"Email"}
-        />
-        <Password
-          name={"password"}
-          placeholder={"Password"}
-          errors={errors?.password?.message}
-          register={register}
-        />
-        <Button type="submit">Signup</Button>
-        <Button
-          onClick={() => {
-            navigate("/login");
-          }}
-        >
-          Go to login
-        </Button>
-      </form>
-    </>
+    <Box
+      maxW="xl"
+      mx="auto"
+      mt={20}
+      p={8}
+      boxShadow="lg"
+      borderRadius="xl"
+      textAlign="center"
+    >
+      <VStack spacing={8} alignItems="center">
+        <Heading as="h2" size="2xl">
+          SIGNUP FORM
+        </Heading>
+        <form onSubmit={handleSubmit(handleSignupSubmit)}>
+          <VStack spacing={6} alignItems="stretch">
+            <TextField
+              name={"name"}
+              register={register}
+              errors={errors?.name?.message}
+              placeholder={"Name"}
+              size="lg"
+            />
+            <TextField
+              name={"email"}
+              register={register}
+              errors={errors?.email?.message}
+              placeholder={"Email"}
+              size="lg"
+            />
+            <Password
+              name={"password"}
+              placeholder={"Password"}
+              errors={errors?.password?.message}
+              register={register}
+              size="lg"
+            />
+            <Button type="submit" colorScheme="teal" size="lg" w="full">
+              Signup
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigate("/login");
+              }}
+              size="lg"
+              w="full"
+            >
+              Go to login
+            </Button>
+          </VStack>
+        </form>
+      </VStack>
+    </Box>
   );
 };
 

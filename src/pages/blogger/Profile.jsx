@@ -1,6 +1,13 @@
 import { useSelector } from "react-redux";
 import Layout from "../../components/Layout/Layout";
-import { Button, HStack, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Grid,
+  HStack,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 // import ImageComponent from "../../components/ImageComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -67,10 +74,11 @@ const Profile = () => {
   useEffect(() => {
     getUser();
     getUserBlogs();
+    //eslint-disable-next-line
   }, []);
 
   return (
-    <Layout>
+    <Layout title={"Profile"}>
       <DeleteComment
         body={
           "This action will delete your profile permanently and cannot be reverted."
@@ -79,47 +87,64 @@ const Profile = () => {
         isOpen={isOpen}
         handleDelete={handleDeleteProfile}
       />
-      {user?.id === profileUser?.id && (
-        <HStack>
-          <Button
-            onClick={() => {
-              navigate(`/edit-profile/${params.id}`);
-            }}
-          >
-            Edit profile
-          </Button>
-          <Button
-            onClick={() => {
-              onOpen();
-            }}
-          >
-            Delete profile
-          </Button>
-        </HStack>
-      )}
+      <VStack gap={4} align={"stretch"}>
+        {user?.id === profileUser?.id && (
+          <HStack>
+            <Button
+              onClick={() => {
+                navigate(`/edit-profile/${params.id}`);
+              }}
+              bg={"primary.0"}
+              color={"white"}
+            >
+              Edit profile
+            </Button>
+            <Button
+              bg={"error.100"}
+              color={"white"}
+              onClick={() => {
+                onOpen();
+              }}
+            >
+              Delete profile
+            </Button>
+          </HStack>
+        )}
 
-      <Text>{user?.name}</Text>
-      <ImageComponent
-        isProfileImg={true}
-        borderRadius={"50%"}
-        width={"100px"}
-        height={"100px"}
-        src={profileUser?.profilePic}
-      />
+        <Text>{profileUser?.name}</Text>
+        <ImageComponent
+          isProfileImg={true}
+          borderRadius={"50%"}
+          width={"100px"}
+          height={"100px"}
+          src={profileUser?.profilePic}
+        />
+      </VStack>
       <VStack alignItems={"stretch"}>
-        <Text>Users blogs</Text>
-        <VStack alignItems={"stretch"}>
-          {userBlogs?.map((post) => (
-            <BlogCard
-              key={post.id}
-              onClick={() => handleBlogClick(post.id)}
-              blogId={post.id}
-              title={post.title}
-              body={post.body}
-              isProfile={true}
-            />
-          ))}
-        </VStack>
+        <Text mt={10} variant={"heading1"}>
+          Posted blogs
+        </Text>
+        {userBlogs ? (
+          <VStack alignItems={"stretch"}>
+            <Grid templateColumns="repeat(5, 1fr)" gap={"16px"}>
+              {userBlogs?.map((post) => (
+                <BlogCard
+                  key={post.id}
+                  onClick={() => handleBlogClick(post.id)}
+                  title={post.title}
+                  body={post.body}
+                  blogId={post.id}
+                  image={post.images}
+                  date={post.createdAt}
+                  profileUser={profileUser}
+                  isProfile={true}
+                />
+              ))}
+            </Grid>
+          </VStack>
+        ) : (
+          <Text variant={"subtitle1"}>No blogs posted</Text>
+        )}
       </VStack>
 
       {/* <ImageComponent /> */}

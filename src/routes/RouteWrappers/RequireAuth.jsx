@@ -70,7 +70,7 @@ const RequireAuth = ({ children, userRoles }) => {
       return children;
     }
   } else {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 };
 
