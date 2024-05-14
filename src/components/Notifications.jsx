@@ -14,7 +14,7 @@ import {
   Text,
   VStack,
   MenuItem,
-  Divider
+  Divider,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -30,12 +30,12 @@ const Notifications = () => {
   const [isUnseen, setIsUnseen] = useState(true);
   const [unseenNotifications, setUnseenNotifications] = useState([]);
   const [seenNotifications, setSeenNotifications] = useState([]);
-const [signalNot, setSignalNot] = useState("");
-const navigate = useNavigate();
+  const [signalNot, setSignalNot] = useState("");
+  const navigate = useNavigate();
 
-const handleNotificationClick = (item) => {
-  navigate(item.onClickPath && item.onClickPath);
-};
+  const handleNotificationClick = (item) => {
+    navigate(item.onClickPath && item.onClickPath);
+  };
   // const fetchNotificaitons = async () => {
   //   try {
   //     const response = await axios.get(
@@ -54,20 +54,27 @@ const handleNotificationClick = (item) => {
   //     console.error(error);
   //   }
   // };
+  const fetchNotificaitons = async () => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7141/api/Users/Notifications/${user?.id}`
+      );
+      const unseenNotifications = response.data.filter(
+        (notification) => notification.isRead === false
+      );
+      setUnseenNotifications(unseenNotifications);
+
+      const seenNotifications = response.data.filter(
+        (notification) => notification.isRead === true
+      );
+      setSeenNotifications(seenNotifications);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchNotifications = async () => {
-          try {
-            const response = await axios.get(
-              `https://localhost:7141/api/Users/Notifications/${user?.id}`
-            );
-            setUnseenNotifications(response.data);
-          } catch (error) {
-            console.error(error);
-          }
-        };
-    
-        // Fetch old notifications when the component mounts
-        fetchNotifications();
+    // Fetch old notifications when the component mounts
+    fetchNotificaitons();
     // Start SignalR connection and subscribe to notifications
     SignalRService.startConnection();
     SignalRService.subscribeToNotifications(handleNotification);
@@ -78,10 +85,10 @@ const handleNotificationClick = (item) => {
     };
   }, []);
   const handleNotification = (notification) => {
-    setSignalNot(notification)
-    console.log(notification,"signalNot")
-toast.info(notification?.content)
- //  setUnseenNotifications((prevNotifications) => [...prevNotifications, notification]);
+    setSignalNot(notification);
+    console.log(notification, "signalNot");
+    toast.info(notification?.content);
+    //  setUnseenNotifications((prevNotifications) => [...prevNotifications, notification]);
   };
   const markAllAsSeen = async () => {
     try {
@@ -192,48 +199,48 @@ toast.info(notification?.content)
             <TabPanel>
               {/* <NotificationList notification={unseenNotifications} />
               <NotificationList signalNot={signalNot} /> */}
-               {!unseenNotifications?.length && "No new notifications"}
-      {unseenNotifications?.map((item, index) => {
-        return (
-          <Box key={index}>
-            <MenuItem
-              onClick={() => handleNotificationClick(item)}
-              _hover={{ bgColor: "gray.0" }}
-            >
-              <VStack alignItems={"start"}>
-                <Box fontSize={"md"} fontWeight={"bold"}>
-                  {item.content}
-                </Box>
-                <HStack fontSize={"sm"} color={"gray.100"}>
-                  <i className="fa-regular fa-clock"></i>
-                  <Text>
-                    {item.createdAt && getDateAndTime(item.createdAt)}
-                  </Text>
-                </HStack>
-              </VStack>
-            </MenuItem>
-         {signalNot &&   <MenuItem
-              onClick={() => handleNotificationClick(item)}
-              _hover={{ bgColor: "gray.0" }}
-            >
-              <VStack alignItems={"start"}>
-                <Box fontSize={"md"} fontWeight={"bold"}>
-                  {signalNot?.content}
-                </Box>
-                <HStack fontSize={"sm"} color={"gray.100"}>
-                  <i className="fa-regular fa-clock"></i>
-                  {/* <Text>
+              {!unseenNotifications?.length && "No new notifications"}
+              {unseenNotifications?.map((item, index) => {
+                return (
+                  <Box key={index}>
+                    <MenuItem
+                      onClick={() => handleNotificationClick(item)}
+                      _hover={{ bgColor: "gray.0" }}
+                    >
+                      <VStack alignItems={"start"}>
+                        <Box fontSize={"md"} fontWeight={"bold"}>
+                          {item.content}
+                        </Box>
+                        <HStack fontSize={"sm"} color={"gray.100"}>
+                          <i className="fa-regular fa-clock"></i>
+                          <Text>
+                            {item.createdAt && getDateAndTime(item.createdAt)}
+                          </Text>
+                        </HStack>
+                      </VStack>
+                    </MenuItem>
+                    {signalNot && (
+                      <MenuItem
+                        onClick={() => handleNotificationClick(item)}
+                        _hover={{ bgColor: "gray.0" }}
+                      >
+                        <VStack alignItems={"start"}>
+                          <Box fontSize={"md"} fontWeight={"bold"}>
+                            {signalNot?.content}
+                          </Box>
+                          <HStack fontSize={"sm"} color={"gray.100"}>
+                            <i className="fa-regular fa-clock"></i>
+                            {/* <Text>
                     {item.createdAt && getDateAndTime(item.createdAt)}
                   </Text> */}
-                </HStack>
-              </VStack>
-            </MenuItem>
-      }
-            <Divider borderWidth={"1px"} />
-          </Box>
-        );
-      })}
-
+                          </HStack>
+                        </VStack>
+                      </MenuItem>
+                    )}
+                    <Divider borderWidth={"1px"} />
+                  </Box>
+                );
+              })}
             </TabPanel>
             <TabPanel>
               <NotificationList notification={seenNotifications} />
@@ -311,30 +318,29 @@ export default Notifications;
 //   //     SignalRService.connection.off("ReceiveNotification", handleNotification);
 //   //   };
 //   // }, [user]);
-  // useEffect(() => {
-  //   const fetchNotifications = async () => {
-  //         try {
-  //           const response = await axios.get(
-  //             `https://localhost:7141/api/Users/Notifications/${user?.id}`
-  //           );
-  //           setNotifications(response.data);
-  //         } catch (error) {
-  //           console.error(error);
-  //         }
-  //       };
-    
-  //       // Fetch old notifications when the component mounts
-  //       fetchNotifications();
-  //   // Start SignalR connection and subscribe to notifications
-  //   SignalRService.startConnection();
-  //   SignalRService.subscribeToNotifications(handleNotification);
+// useEffect(() => {
+//   const fetchNotifications = async () => {
+//         try {
+//           const response = await axios.get(
+//             `https://localhost:7141/api/Users/Notifications/${user?.id}`
+//           );
+//           setNotifications(response.data);
+//         } catch (error) {
+//           console.error(error);
+//         }
+//       };
 
-  //   return () => {
-  //     // Clean up subscription when component unmounts
-  //     SignalRService.connection.off("ReceiveNotification", handleNotification);
-  //   };
-  // }, []);
+//       // Fetch old notifications when the component mounts
+//       fetchNotifications();
+//   // Start SignalR connection and subscribe to notifications
+//   SignalRService.startConnection();
+//   SignalRService.subscribeToNotifications(handleNotification);
 
+//   return () => {
+//     // Clean up subscription when component unmounts
+//     SignalRService.connection.off("ReceiveNotification", handleNotification);
+//   };
+// }, []);
 
 //   const handleNotification = (notification) => {
 //     setNotifications((prevNotifications) => {
@@ -343,7 +349,7 @@ export default Notifications;
 //       return updatedNotifications;
 //     });
 //   };
-  
+
 //   return (
 //     <Menu>
 //       <MenuButton>

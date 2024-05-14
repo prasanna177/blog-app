@@ -16,7 +16,7 @@ import { BiHomeAlt, BiBarChartAlt2, BiClipboard, BiCog } from "react-icons/bi";
 import logo from "../assets/images/logo.png";
 import toast from "react-hot-toast";
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   return (
     <Box w="250px" bg="gray.900" color="white" p="4" minHeight={"100vh"}>
       <VStack align="stretch" spacing="50">
@@ -96,4 +96,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;

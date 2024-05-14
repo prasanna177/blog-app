@@ -57,7 +57,8 @@ const RequireAuth = ({ children, userRoles }) => {
   useEffect(() => {
     getUser();
     //eslint-disable-next-line
-  }, []);
+  }, [])
+  console.log(currentUserRole,'role')
 
   if (currentUserRole) {
     if (userRoles) {
